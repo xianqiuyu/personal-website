@@ -19,6 +19,9 @@
           <router-link to="/blog" @click="closeMenu">博客</router-link>
         </li>
         <li>
+          <router-link to="/footprints" @click="closeMenu">足迹</router-link>
+        </li>
+        <li>
           <router-link to="/contact" @click="closeMenu">联系</router-link>
         </li>
       </ul>
