@@ -101,15 +101,31 @@ const setMsg = (type: 'ok' | 'err', text: string) => {
   }, 2500)
 }
 
+const parseApiJson = (raw: string) => {
+  const text = raw.trim()
+  if (!text) throw new Error('接口返回空响应')
+  const parsed: unknown = JSON.parse(text)
+  if (!parsed || typeof parsed !== 'object') throw new Error('接口返回格式不正确')
+  return parsed as Record<string, unknown>
+}
+
+const getApiError = (obj: Record<string, unknown>) => {
+  const err = obj.error
+  if (typeof err === 'string' && err.trim()) return err
+  return '请求失败'
+}
+
 const load = async () => {
   isLoading.value = true
   try {
     const r = await fetch(`/api/comments?page=${encodeURIComponent(props.page)}`)
-    const data = await r.json()
-    if (!r.ok || !data.ok) throw new Error(data.error || '加载失败')
-    comments.value = data.comments
-  } catch (e: any) {
-    setMsg('err', e?.message || '加载失败')
+    const raw = await r.text()
+    const obj = parseApiJson(raw)
+    if (!r.ok || obj.ok !== true) throw new Error(getApiError(obj))
+    comments.value = (obj.comments as CommentItem[]) || []
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : '加载失败'
+    setMsg('err', msg)
   } finally {
     isLoading.value = false
   }
@@ -128,14 +144,16 @@ const submit = async () => {
         content: content.value.trim(),
       }),
     })
-    const data = await r.json()
-    if (!r.ok || !data.ok) throw new Error(data.error || '发布失败')
+    const raw = await r.text()
+    const obj = parseApiJson(raw)
+    if (!r.ok || obj.ok !== true) throw new Error(getApiError(obj))
 
     content.value = ''
     setMsg('ok', '发布成功')
     await load()
-  } catch (e: any) {
-    setMsg('err', e?.message || '发布失败')
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : '发布失败'
+    setMsg('err', msg)
   } finally {
     isSubmitting.value = false
   }
