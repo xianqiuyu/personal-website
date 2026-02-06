@@ -27,8 +27,18 @@
 
       <div class="actions">
         <button class="btn" type="submit" :disabled="isSubmitting || !content.trim()">
-          <span v-if="!isSubmitting">发布评论</span>
+          <span v-if="!isSubmitting && editingId === null">发布评论</span>
+          <span v-else-if="!isSubmitting && editingId !== null">保存修改</span>
           <span v-else>发布中...</span>
+        </button>
+        <button
+          v-if="editingId !== null"
+          class="ghost"
+          type="button"
+          @click="cancelEdit"
+          :disabled="isSubmitting"
+        >
+          取消编辑
         </button>
         <span v-if="message" class="message" :class="{ ok: messageType === 'ok', err: messageType === 'err' }">
           {{ message }}
@@ -50,13 +60,49 @@
       <ul v-else class="items">
         <li v-for="c in comments" :key="c.id" class="item">
           <div class="meta">
-            <span class="who">{{ c.name }}</span>
-            <span class="dot">·</span>
-            <time class="time">{{ formatTime(c.created_at) }}</time>
+            <div class="meta-main">
+              <span class="who">{{ c.name }}</span>
+              <span class="dot">·</span>
+              <time class="time">{{ formatTime(c.created_at) }}</time>
+            </div>
+            <div v-if="c.isMine" class="ops">
+              <button type="button" class="chip-btn" @click="startEdit(c)">
+                ✏️
+                <span>编辑</span>
+              </button>
+              <button type="button" class="chip-btn danger" @click="askRemove(c)">
+                🗑
+                <span>删除</span>
+              </button>
+            </div>
           </div>
           <p class="text" v-text="c.content"></p>
         </li>
       </ul>
+    </div>
+
+    <!-- 删除确认弹框 -->
+    <div v-if="showConfirm" class="confirm-overlay" @click="closeConfirm">
+      <div class="confirm-dialog" @click.stop>
+        <h3 class="confirm-title">删除这条评论？</h3>
+        <p class="confirm-text">
+          删除后将无法恢复，只会影响你自己刚才发布的这一条。
+        </p>
+        <p v-if="confirmTarget" class="confirm-preview">
+          “{{ confirmTarget.content }}”
+        </p>
+        <div class="confirm-actions">
+          <button type="button" class="ghost" @click="closeConfirm">先留着</button>
+          <button
+            type="button"
+            class="btn danger"
+            @click="confirmRemove"
+            :disabled="isSubmitting"
+          >
+            确认删除
+          </button>
+        </div>
+      </div>
     </div>
   </section>
 </template>
@@ -70,6 +116,7 @@ type CommentItem = {
   name: string
   content: string
   created_at: string
+  isMine?: boolean
 }
 
 const props = defineProps<{
@@ -81,12 +128,38 @@ const maxContentLen = props.maxContentLen ?? 800
 
 const name = ref('')
 const content = ref('')
+const editingId = ref<number | null>(null)
 
 const comments = ref<CommentItem[]>([])
 const isLoading = ref(false)
 const isSubmitting = ref(false)
 const message = ref('')
 const messageType = ref<'ok' | 'err'>('ok')
+
+const showConfirm = ref(false)
+const confirmTarget = ref<CommentItem | null>(null)
+
+const anonUserIdKey = 'anon_user_id_v1'
+const anonUserId = ref('')
+
+const ensureAnonUserId = () => {
+  if (anonUserId.value) return
+  let id = ''
+  if (typeof window !== 'undefined') {
+    id = window.localStorage.getItem(anonUserIdKey) || ''
+  }
+  if (!id) {
+    if (typeof crypto !== 'undefined' && typeof (crypto as Crypto).randomUUID === 'function') {
+      id = (crypto as Crypto).randomUUID()
+    } else {
+      id = Math.random().toString(36).slice(2) + Date.now().toString(36)
+    }
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(anonUserIdKey, id)
+    }
+  }
+  anonUserId.value = id
+}
 
 const formatTime = (iso: string) => {
   const d = new Date(iso)
@@ -118,7 +191,9 @@ const getApiError = (obj: Record<string, unknown>) => {
 const load = async () => {
   isLoading.value = true
   try {
-    const r = await fetch(`/api/comments?page=${encodeURIComponent(props.page)}`)
+    const r = await fetch(
+      `/api/comments?page=${encodeURIComponent(props.page)}&anonUserId=${encodeURIComponent(anonUserId.value)}`
+    )
     const raw = await r.text()
     const obj = parseApiJson(raw)
     if (!r.ok || obj.ok !== true) throw new Error(getApiError(obj))
@@ -135,21 +210,29 @@ const submit = async () => {
   if (!content.value.trim()) return
   isSubmitting.value = true
   try {
-    const r = await fetch('/api/comments', {
-      method: 'POST',
+    const body = {
+      page: props.page,
+      name: name.value.trim() || '匿名',
+      content: content.value.trim(),
+      anonUserId: anonUserId.value,
+    }
+
+    const url =
+      editingId.value != null ? `/api/comments/${editingId.value}` : '/api/comments'
+    const method = editingId.value != null ? 'PUT' : 'POST'
+
+    const r = await fetch(url, {
+      method,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        page: props.page,
-        name: name.value.trim() || '匿名',
-        content: content.value.trim(),
-      }),
+      body: JSON.stringify(body),
     })
     const raw = await r.text()
     const obj = parseApiJson(raw)
     if (!r.ok || obj.ok !== true) throw new Error(getApiError(obj))
 
     content.value = ''
-    setMsg('ok', '发布成功')
+    editingId.value = null
+    setMsg('ok', method === 'POST' ? '发布成功' : '修改成功')
     await load()
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : '发布失败'
@@ -159,7 +242,55 @@ const submit = async () => {
   }
 }
 
+const startEdit = (c: CommentItem) => {
+  editingId.value = c.id
+  content.value = c.content
+}
+
+const cancelEdit = () => {
+  editingId.value = null
+  content.value = ''
+}
+
+const doRemove = async (c: CommentItem) => {
+  try {
+    const r = await fetch(`/api/comments/${c.id}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ anonUserId: anonUserId.value }),
+    })
+    const raw = await r.text()
+    const obj = parseApiJson(raw)
+    if (!r.ok || obj.ok !== true) throw new Error(getApiError(obj))
+
+    setMsg('ok', '已删除')
+    await load()
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : '删除失败'
+    setMsg('err', msg)
+  }
+}
+
+const askRemove = (c: CommentItem) => {
+  if (!c.isMine) return
+  confirmTarget.value = c
+  showConfirm.value = true
+}
+
+const closeConfirm = () => {
+  showConfirm.value = false
+  confirmTarget.value = null
+}
+
+const confirmRemove = async () => {
+  if (!confirmTarget.value) return
+  const target = confirmTarget.value
+  closeConfirm()
+  await doRemove(target)
+}
+
 onMounted(() => {
+  ensureAnonUserId()
   load()
 })
 </script>
@@ -324,10 +455,17 @@ textarea:focus {
 
 .meta {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
   font-weight: 800;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.meta-main {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
 }
 
 .who {
@@ -344,6 +482,111 @@ textarea:focus {
   margin: 0;
   white-space: pre-wrap;
   line-height: 1.7;
+}
+
+.ops {
+  display: flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.chip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--primary);
+  box-shadow: 0 4px 10px rgba(255, 107, 157, 0.16);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.chip-btn span {
+  position: relative;
+  top: 0.5px;
+}
+
+.chip-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(255, 107, 157, 0.22);
+  background: rgba(255, 255, 255, 1);
+}
+
+.chip-btn.danger {
+  background: rgba(248, 113, 113, 0.08);
+  color: #dc2626;
+  box-shadow: 0 4px 10px rgba(248, 113, 113, 0.18);
+}
+
+.chip-btn.danger:hover {
+  box-shadow: 0 8px 18px rgba(248, 113, 113, 0.26);
+}
+
+.btn.danger {
+  background: linear-gradient(135deg, #f97373, #ef4444);
+}
+
+.btn.danger:hover:not(:disabled) {
+  box-shadow: 0 18px 35px rgba(248, 113, 113, 0.32);
+}
+
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+}
+
+.confirm-dialog {
+  width: min(420px, 90vw);
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 1.6rem 1.8rem;
+  box-shadow: 0 22px 60px rgba(15, 23, 42, 0.38);
+  border: 2px solid rgba(255, 107, 157, 0.2);
+}
+
+.confirm-title {
+  margin: 0 0 0.6rem;
+  font-size: 1.3rem;
+  color: var(--primary);
+}
+
+.confirm-text {
+  margin: 0 0 0.6rem;
+  color: var(--text);
+  opacity: 0.85;
+  font-size: 0.95rem;
+}
+
+.confirm-preview {
+  margin: 0 0 1rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 14px;
+  background: rgba(248, 250, 252, 0.9);
+  border: 1px dashed rgba(148, 163, 184, 0.7);
+  font-size: 0.9rem;
+  max-height: 5.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.7rem;
+}
+
+.confirm-actions .ghost {
+  padding-inline: 1.1rem;
 }
 
 @media (max-width: 768px) {

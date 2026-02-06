@@ -33,7 +33,7 @@ export default async function handler(req, res) {
 
     const sql = neon(databaseUrl)
 
-    // 确保表存在（首次请求自动创建）
+    // 确保表结构存在（首次请求自动创建 / 自动迁移）
     await sql`
       CREATE TABLE IF NOT EXISTS public_comments (
         id BIGSERIAL PRIMARY KEY,
@@ -42,20 +42,33 @@ export default async function handler(req, res) {
         content TEXT NOT NULL,
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         ip TEXT,
-        user_agent TEXT
+        user_agent TEXT,
+        anon_user_id VARCHAR(64)
       );
     `
+    await sql`ALTER TABLE public_comments ADD COLUMN IF NOT EXISTS anon_user_id VARCHAR(64);`
     await sql`CREATE INDEX IF NOT EXISTS idx_public_comments_page_created ON public_comments(page, created_at DESC);`
 
+    const url = new URL(req.url, `http://${req.headers.host}`)
+    const pathname = url.pathname || '/api/comments'
+    const idMatch = pathname.match(/^\/api\/comments\/(\d+)/)
+    const commentId = idMatch ? Number(idMatch[1]) : null
+
     if (req.method === 'GET') {
-      const url = new URL(req.url, `http://${req.headers.host}`)
       const page = (url.searchParams.get('page') || '').trim()
+      const anonUserId = (url.searchParams.get('anonUserId') || '').trim()
       if (!page || page.length > MAX_PAGE_LEN) {
         return json(res, 400, { ok: false, error: 'page 参数缺失或过长' })
       }
 
       const rows = await sql`
-        SELECT id, page, name, content, created_at
+        SELECT
+          id,
+          page,
+          name,
+          content,
+          created_at,
+          CASE WHEN anon_user_id = ${anonUserId} THEN true ELSE false END AS "isMine"
         FROM public_comments
         WHERE page = ${page}
         ORDER BY created_at DESC
@@ -64,25 +77,33 @@ export default async function handler(req, res) {
       return json(res, 200, { ok: true, comments: rows })
     }
 
-    if (req.method === 'POST') {
-      let body = ''
-      req.on('data', chunk => {
-        body += chunk
-        if (body.length > 1024 * 1024) {
-          req.destroy()
-        }
+    const collectBody = () =>
+      new Promise((resolve, reject) => {
+        let body = ''
+        req.on('data', chunk => {
+          body += chunk
+          if (body.length > 1024 * 1024) {
+            req.destroy()
+            reject(new Error('请求体过大'))
+          }
+        })
+        req.on('end', () => {
+          try {
+            resolve(JSON.parse(body || '{}'))
+          } catch {
+            reject(new Error('JSON 格式不正确'))
+          }
+        })
+        req.on('error', reject)
       })
-      req.on('end', async () => {
-        let data
-        try {
-          data = JSON.parse(body || '{}')
-        } catch {
-          return json(res, 400, { ok: false, error: 'JSON 格式不正确' })
-        }
 
+    if (req.method === 'POST') {
+      try {
+        const data = await collectBody()
         const page = String(data.page || '').trim()
         const name = String(data.name || '匿名').trim()
         const content = String(data.content || '').trim()
+        const anonUserId = String(data.anonUserId || '').trim()
 
         if (!page || page.length > MAX_PAGE_LEN) {
           return json(res, 400, { ok: false, error: 'page 参数缺失或过长' })
@@ -96,22 +117,89 @@ export default async function handler(req, res) {
         if (content.length > MAX_CONTENT_LEN) {
           return json(res, 400, { ok: false, error: `评论内容最多 ${MAX_CONTENT_LEN} 字` })
         }
+        if (!anonUserId || anonUserId.length > 64) {
+          return json(res, 400, { ok: false, error: '访客标识异常，请刷新页面重试' })
+        }
 
         const ip = getClientIp(req)
         const userAgent = String(req.headers['user-agent'] || '')
 
         const inserted = await sql`
-          INSERT INTO public_comments (page, name, content, ip, user_agent)
-          VALUES (${page}, ${name}, ${content}, ${ip}, ${userAgent})
+          INSERT INTO public_comments (page, name, content, ip, user_agent, anon_user_id)
+          VALUES (${page}, ${name}, ${content}, ${ip}, ${userAgent}, ${anonUserId})
           RETURNING id, page, name, content, created_at;
         `
 
         return json(res, 200, { ok: true, comment: inserted[0] })
-      })
-      return
+      } catch (e) {
+        return json(res, 400, { ok: false, error: e.message || '请求体解析失败' })
+      }
     }
 
-    res.setHeader('Allow', 'GET, POST')
+    if (req.method === 'PUT') {
+      if (!commentId) {
+        return json(res, 400, { ok: false, error: '缺少评论 ID' })
+      }
+      try {
+        const data = await collectBody()
+        const content = String(data.content || '').trim()
+        const anonUserId = String(data.anonUserId || '').trim()
+
+        if (!content) {
+          return json(res, 400, { ok: false, error: '评论内容不能为空' })
+        }
+        if (content.length > MAX_CONTENT_LEN) {
+          return json(res, 400, { ok: false, error: `评论内容最多 ${MAX_CONTENT_LEN} 字` })
+        }
+        if (!anonUserId || anonUserId.length > 64) {
+          return json(res, 400, { ok: false, error: '访客标识异常，请刷新页面重试' })
+        }
+
+        const updated = await sql`
+          UPDATE public_comments
+          SET content = ${content}
+          WHERE id = ${commentId} AND anon_user_id = ${anonUserId}
+          RETURNING id, page, name, content, created_at;
+        `
+
+        if (updated.length === 0) {
+          return json(res, 403, { ok: false, error: '无权限修改此评论或评论不存在' })
+        }
+
+        return json(res, 200, { ok: true, comment: updated[0] })
+      } catch (e) {
+        return json(res, 400, { ok: false, error: e.message || '请求体解析失败' })
+      }
+    }
+
+    if (req.method === 'DELETE') {
+      if (!commentId) {
+        return json(res, 400, { ok: false, error: '缺少评论 ID' })
+      }
+      try {
+        const data = await collectBody()
+        const anonUserId = String(data.anonUserId || '').trim()
+        if (!anonUserId || anonUserId.length > 64) {
+          return json(res, 400, { ok: false, error: '访客标识异常，请刷新页面重试' })
+        }
+
+        const deleted = await sql`
+          DELETE FROM public_comments
+          WHERE id = ${commentId} AND anon_user_id = ${anonUserId}
+          RETURNING id;
+        `
+
+        if (deleted.length === 0) {
+          return json(res, 403, { ok: false, error: '无权限删除此评论或评论不存在' })
+        }
+
+        return json(res, 200, { ok: true })
+      } catch (e) {
+        return json(res, 400, { ok: false, error: e.message || '请求体解析失败' })
+      }
+    }
+
+    res.setHeader('Allow', 'GET, POST, PUT, DELETE')
     return json(res, 405, { ok: false, error: 'Method Not Allowed' })
   } catch (e) {
     return json(res, 500, { ok: false, error: '服务异常' })
