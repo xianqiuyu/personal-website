@@ -54,21 +54,6 @@
               </div>
             </div>
           </div>
-          
-          <!-- 信息提示弹窗 -->
-          <div v-if="showInfoModal" class="info-modal-overlay" @click="closeInfoModal">
-            <div class="info-modal" @click.stop>
-              <button class="close-btn" @click="closeInfoModal">×</button>
-              <h3>{{ infoModalTitle }}</h3>
-              <div class="info-content">
-                <div class="info-value">{{ infoModalContent }}</div>
-                <button class="copy-btn" @click="copyToClipboard">
-                  <span>📋</span>
-                  <span>复制</span>
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
 
         <!-- 联系表单 -->
@@ -139,6 +124,7 @@ import emailjs from '@emailjs/browser'
 import { personalInfo, socialLinks } from '@/config/personalInfo'
 import WeChatIcon from '@/components/icons/WeChatIcon.vue'
 import QQIcon from '@/components/icons/QQIcon.vue'
+import { useContactInfoModalStore } from '@/stores/contactInfoModal'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -152,12 +138,7 @@ const form = ref({
 const isSubmitting = ref(false)
 const submitMessage = ref('')
 const isSuccess = ref(false)
-
-// 信息弹窗
-const showInfoModal = ref(false)
-const infoModalTitle = ref('')
-const infoModalContent = ref('')
-const currentCopyText = ref('')
+const contactModal = useContactInfoModalStore()
 
 // EmailJS 配置
 // 注意：需要在 https://www.emailjs.com/ 注册并获取以下配置
@@ -251,60 +232,12 @@ const handleSubmit = async () => {
 // 处理社交链接点击
 const handleSocialClick = (link: any) => {
   if (link.name === '微信') {
-    infoModalTitle.value = '微信号'
-    infoModalContent.value = 'yuxianqiu1995'
-    currentCopyText.value = 'yuxianqiu1995'
-    showInfoModal.value = true
+    contactModal.openWeChat('yuxianqiu1995')
   } else if (link.name === 'QQ') {
-    infoModalTitle.value = 'QQ号'
-    infoModalContent.value = '2535462360'
-    currentCopyText.value = '2535462360'
-    showInfoModal.value = true
+    contactModal.openQQ('2535462360')
   } else if (link.url && link.url !== '#') {
     window.open(link.url, '_blank')
   }
-}
-
-// 复制到剪贴板
-const copyToClipboard = async () => {
-  try {
-    await navigator.clipboard.writeText(currentCopyText.value)
-    // 临时修改按钮文本
-    const copyBtn = document.querySelector('.copy-btn')
-    if (copyBtn) {
-      const originalText = copyBtn.innerHTML
-      copyBtn.innerHTML = '<span>✓</span><span>已复制</span>'
-      setTimeout(() => {
-        copyBtn.innerHTML = originalText
-      }, 2000)
-    }
-  } catch (error) {
-    console.error('复制失败:', error)
-    // 备用方案
-    const textArea = document.createElement('textarea')
-    textArea.value = currentCopyText.value
-    document.body.appendChild(textArea)
-    textArea.select()
-    document.execCommand('copy')
-    document.body.removeChild(textArea)
-    
-    const copyBtn = document.querySelector('.copy-btn')
-    if (copyBtn) {
-      const originalText = copyBtn.innerHTML
-      copyBtn.innerHTML = '<span>✓</span><span>已复制</span>'
-      setTimeout(() => {
-        copyBtn.innerHTML = originalText
-      }, 2000)
-    }
-  }
-}
-
-// 关闭信息弹窗
-const closeInfoModal = () => {
-  showInfoModal.value = false
-  infoModalTitle.value = ''
-  infoModalContent.value = ''
-  currentCopyText.value = ''
 }
 
 onMounted(() => {
@@ -567,120 +500,6 @@ onMounted(() => {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* 信息弹窗样式 */
-.info-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-  animation: fadeIn 0.3s ease;
-  backdrop-filter: blur(5px);
-}
-
-.info-modal {
-  background: white;
-  border-radius: 30px;
-  padding: 2.5rem;
-  max-width: 400px;
-  width: 90%;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  position: relative;
-  animation: modalSlideIn 0.3s ease;
-}
-
-@keyframes modalSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-30px) scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.close-btn {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  width: 35px;
-  height: 35px;
-  border: none;
-  background: #f5f5f5;
-  border-radius: 50%;
-  font-size: 1.5rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text);
-  transition: all 0.3s ease;
-  line-height: 1;
-}
-
-.close-btn:hover {
-  background: var(--primary);
-  color: white;
-  transform: rotate(90deg);
-}
-
-.info-modal h3 {
-  font-size: 1.8rem;
-  margin-bottom: 1.5rem;
-  color: var(--primary);
-  text-align: center;
-}
-
-.info-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  align-items: center;
-}
-
-.info-value {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--text);
-  padding: 1rem 2rem;
-  background: linear-gradient(135deg, rgba(255, 107, 157, 0.1), rgba(78, 205, 196, 0.1));
-  border-radius: 15px;
-  border: 2px dashed var(--primary);
-  word-break: break-all;
-  text-align: center;
-}
-
-.copy-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.8rem 2rem;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  color: white;
-  border: none;
-  border-radius: 25px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: inherit;
-}
-
-.copy-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(255, 107, 157, 0.3);
-}
-
-.copy-btn span:first-child {
-  font-size: 1.2rem;
 }
 
 @media (max-width: 768px) {

@@ -2,12 +2,14 @@
   <div id="app">
     <NavBar />
     <RouterView />
+    <ContactInfoModal />
   </div>
 </template>
 
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
 import NavBar from './components/NavBar.vue'
+import ContactInfoModal from './components/ContactInfoModal.vue'
 </script>
 
 <style>

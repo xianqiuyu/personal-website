@@ -150,17 +150,24 @@
             </div>
           </div>
           <div class="social-links">
-            <a 
-              v-for="(link, index) in socialLinks" 
+            <div
+              v-for="(link, index) in socialLinks"
               :key="index"
-              :href="link.url" 
-              target="_blank"
               class="social-link"
               :style="{ animationDelay: `${index * 0.1}s` }"
+              role="button"
+              tabindex="0"
+              @click="handleSocialClick(link)"
+              @keydown.enter.prevent="handleSocialClick(link)"
+              @keydown.space.prevent="handleSocialClick(link)"
             >
-              <span class="social-icon">{{ link.icon }}</span>
+              <div class="social-icon-wrapper">
+                <WeChatIcon v-if="link.icon === 'wechat'" />
+                <QQIcon v-else-if="link.icon === 'qq'" />
+                <span v-else class="social-icon">{{ link.icon }}</span>
+              </div>
               <span class="social-name">{{ link.name }}</span>
-            </a>
+            </div>
           </div>
         </div>
       </div>
@@ -179,6 +186,9 @@ import { useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { personalInfo as personalInfoConfig, skills as skillsConfig, projects as projectsConfig, socialLinks as socialLinksConfig } from '@/config/personalInfo'
+import WeChatIcon from '@/components/icons/WeChatIcon.vue'
+import QQIcon from '@/components/icons/QQIcon.vue'
+import { useContactInfoModalStore } from '@/stores/contactInfoModal'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -189,6 +199,7 @@ const personalInfo = ref(personalInfoConfig)
 const skills = ref(skillsConfig)
 const projects = ref(projectsConfig)
 const socialLinks = ref(socialLinksConfig)
+const contactModal = useContactInfoModalStore()
 
 // Refs
 const heroRef = ref<HTMLElement>()
@@ -207,6 +218,20 @@ const scrollTo = (id: string) => {
   const element = document.getElementById(id)
   if (element) {
     element.scrollIntoView({ behavior: 'smooth' })
+  }
+}
+
+const handleSocialClick = (link: any) => {
+  if (link.name === '微信') {
+    contactModal.openWeChat('yuxianqiu1995')
+    return
+  }
+  if (link.name === 'QQ') {
+    contactModal.openQQ('2535462360')
+    return
+  }
+  if (link.url && link.url !== '#') {
+    window.open(link.url, '_blank')
   }
 }
 
@@ -867,6 +892,7 @@ onUnmounted(() => {
   color: var(--text);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .social-link:hover {
@@ -878,6 +904,18 @@ onUnmounted(() => {
 
 .social-icon {
   font-size: 2.5rem;
+}
+
+.social-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+}
+
+.social-icon-wrapper :deep(svg) {
+  width: 32px;
+  height: 32px;
 }
 
 .social-name {
