@@ -6,11 +6,21 @@
         <span class="logo-text">于贤秋的个人网站</span>
       </router-link>
       <ul class="nav-menu" :class="{ active: menuOpen }">
-        <li><router-link to="/" @click="closeMenu">首页</router-link></li>
-        <li><router-link to="/about" @click="closeMenu">关于我</router-link></li>
-        <li><router-link to="/portfolio" @click="closeMenu">作品集</router-link></li>
-        <li><router-link to="/blog" @click="closeMenu">博客</router-link></li>
-        <li><router-link to="/contact" @click="closeMenu">联系</router-link></li>
+        <li>
+          <router-link to="/" @click="closeMenu">首页</router-link>
+        </li>
+        <li>
+          <router-link to="/about" @click="closeMenu">关于我</router-link>
+        </li>
+        <li>
+          <router-link to="/portfolio" @click="closeMenu">作品集</router-link>
+        </li>
+        <li>
+          <router-link to="/blog" @click="closeMenu">博客</router-link>
+        </li>
+        <li>
+          <router-link to="/contact" @click="closeMenu">联系</router-link>
+        </li>
       </ul>
       <button class="menu-toggle" @click="menuOpen = !menuOpen">
         <span></span>

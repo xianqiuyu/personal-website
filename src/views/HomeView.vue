@@ -1,27 +1,5 @@
 <template>
   <div class="home">
-    <!-- 导航栏 -->
-    <nav class="navbar" :class="{ scrolled: isScrolled }">
-      <div class="nav-container">
-        <div class="logo" @click="scrollToTop">
-          <span class="logo-icon">🚀</span>
-          <span class="logo-text">我的个人网站</span>
-        </div>
-        <ul class="nav-menu" :class="{ active: menuOpen }">
-          <li><a href="#home" @click="scrollTo('home')">首页</a></li>
-          <li><a href="#about" @click="scrollTo('about')">关于我</a></li>
-          <li><a href="#skills" @click="scrollTo('skills')">技能</a></li>
-          <li><a href="#projects" @click="scrollTo('projects')">项目</a></li>
-          <li><a href="#contact" @click="scrollTo('contact')">联系</a></li>
-        </ul>
-        <button class="menu-toggle" @click="menuOpen = !menuOpen">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-      </div>
-    </nav>
-
     <!-- Hero 区域 -->
     <section id="home" class="hero" ref="heroRef">
       <div class="hero-content">
@@ -37,14 +15,14 @@
             {{ personalInfo.description || '热爱创造酷炫的交互体验，用代码让世界更美好 ✨' }}
           </p>
           <div class="hero-buttons" ref="buttonsRef">
-            <button class="btn btn-primary" @click="scrollTo('contact')">
+            <router-link to="/contact" class="btn btn-primary">
               <span>联系我</span>
               <span class="btn-icon">💌</span>
-            </button>
-            <button class="btn btn-secondary" @click="scrollTo('projects')">
+            </router-link>
+            <router-link to="/portfolio" class="btn btn-secondary">
               <span>查看作品</span>
               <span class="btn-icon">🎨</span>
-            </button>
+            </router-link>
           </div>
         </div>
         <div class="hero-image" ref="imageRef">
@@ -60,10 +38,10 @@
           </div>
         </div>
       </div>
-      <div class="scroll-indicator" @click="scrollTo('about')">
-        <span>向下滚动</span>
+      <router-link to="/about" class="scroll-indicator">
+        <span>了解更多</span>
         <div class="mouse"></div>
-      </div>
+      </router-link>
     </section>
 
     <!-- 关于我 -->
@@ -197,15 +175,14 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { personalInfo as personalInfoConfig, skills as skillsConfig, projects as projectsConfig, socialLinks as socialLinksConfig } from '@/config/personalInfo'
 
 gsap.registerPlugin(ScrollTrigger)
 
-// 响应式数据
-const isScrolled = ref(false)
-const menuOpen = ref(false)
+const router = useRouter()
 
 // 个人信息（从配置文件导入，可在 src/config/personalInfo.ts 中修改）
 const personalInfo = ref(personalInfoConfig)
@@ -225,22 +202,12 @@ const skillsRef = ref<HTMLElement>()
 const projectsRef = ref<HTMLElement>()
 const contactRef = ref<HTMLElement>()
 
-// 滚动处理
-const handleScroll = () => {
-  isScrolled.value = window.scrollY > 50
-}
-
-// 滚动到指定区域
+// 滚动到指定区域（保留用于首页内部锚点）
 const scrollTo = (id: string) => {
-  menuOpen.value = false
   const element = document.getElementById(id)
   if (element) {
     element.scrollIntoView({ behavior: 'smooth' })
   }
-}
-
-const scrollToTop = () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 // 项目卡片悬停效果
@@ -264,7 +231,6 @@ const onProjectLeave = (index: number) => {
 
 // 初始化动画
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll)
 
   // Hero 区域动画
   if (titleRef.value && subtitleRef.value && descriptionRef.value && buttonsRef.value && imageRef.value) {
@@ -348,7 +314,6 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
   ScrollTrigger.getAll().forEach(trigger => trigger.kill())
 })
 </script>
@@ -359,105 +324,6 @@ onUnmounted(() => {
   z-index: 1;
 }
 
-/* 导航栏 */
-.navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  padding: 1rem 0;
-  background: rgba(254, 245, 231, 0.9);
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.navbar.scrolled {
-  padding: 0.5rem 0;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-}
-
-.nav-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--primary);
-  transition: transform 0.3s ease;
-}
-
-.logo:hover {
-  transform: scale(1.1) rotate(-5deg);
-}
-
-.logo-icon {
-  font-size: 2rem;
-  animation: bounce 2s infinite;
-}
-
-.nav-menu {
-  display: flex;
-  list-style: none;
-  gap: 2rem;
-}
-
-.nav-menu a {
-  text-decoration: none;
-  color: var(--text);
-  font-weight: 500;
-  position: relative;
-  transition: color 0.3s ease;
-}
-
-.nav-menu a::after {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 0;
-  height: 3px;
-  background: var(--primary);
-  border-radius: 2px;
-  transition: width 0.3s ease;
-}
-
-.nav-menu a:hover {
-  color: var(--primary);
-}
-
-.nav-menu a:hover::after {
-  width: 100%;
-}
-
-.menu-toggle {
-  display: none;
-  flex-direction: column;
-  gap: 5px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 5px;
-}
-
-.menu-toggle span {
-  width: 25px;
-  height: 3px;
-  background: var(--primary);
-  border-radius: 3px;
-  transition: all 0.3s ease;
-}
 
 /* Hero 区域 */
 .hero {
@@ -465,7 +331,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 100px 2rem 2rem;
+  padding: 120px 2rem 2rem;
   position: relative;
   overflow: hidden;
 }
@@ -542,6 +408,7 @@ onUnmounted(() => {
   font-family: inherit;
   position: relative;
   overflow: hidden;
+  text-decoration: none;
 }
 
 .btn-primary {
@@ -634,6 +501,7 @@ onUnmounted(() => {
   opacity: 0.7;
   transition: opacity 0.3s ease;
   animation: bounce 2s infinite;
+  text-decoration: none;
 }
 
 .scroll-indicator:hover {
@@ -1026,29 +894,6 @@ onUnmounted(() => {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .nav-menu {
-    position: fixed;
-    top: 70px;
-    left: -100%;
-    width: 100%;
-    height: calc(100vh - 70px);
-    background: rgba(254, 245, 231, 0.98);
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    padding-top: 2rem;
-    transition: left 0.3s ease;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-  }
-
-  .nav-menu.active {
-    left: 0;
-  }
-
-  .menu-toggle {
-    display: flex;
-  }
-
   .hero-content {
     grid-template-columns: 1fr;
     text-align: center;

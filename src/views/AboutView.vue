@@ -9,10 +9,12 @@
       <div class="about-content">
         <!-- 个人简介卡片 -->
         <div class="intro-card">
-          <div class="avatar-large">{{ personalInfo.avatar }}</div>
+          <div class="avatar-large">
+            <div class="avatar">{{ personalInfo.avatar }}</div>
+          </div>
           <h2>{{ personalInfo.name }}</h2>
           <p class="title">{{ personalInfo.title }}</p>
-          <p class="description">{{ personalInfo.description }}</p>
+          <p class="description">{{ personalInfo.bio }}</p>
         </div>
 
         <!-- 详细信息 -->
@@ -42,20 +44,15 @@
           </div>
         </div>
 
-        <!-- 个人简介 -->
-        <div class="bio-section">
-          <h2>个人简介</h2>
-          <p>{{ personalInfo.bio }}</p>
-        </div>
-
         <!-- 技能展示 -->
         <div class="skills-section">
-          <h2>技能树</h2>
+          <h2 class="section-title">我的技能</h2>
           <div class="skills-grid">
             <div 
               v-for="(skill, index) in skills" 
               :key="index" 
-              class="skill-item"
+              class="skill-card"
+              :style="{ animationDelay: `${index * 0.1}s` }"
             >
               <div class="skill-icon">{{ skill.icon }}</div>
               <h3>{{ skill.name }}</h3>
@@ -66,18 +63,6 @@
             </div>
           </div>
         </div>
-
-        <!-- 行动按钮 -->
-        <div class="action-buttons">
-          <router-link to="/portfolio" class="btn btn-primary">
-            <span>查看作品</span>
-            <span class="btn-icon">🎨</span>
-          </router-link>
-          <router-link to="/contact" class="btn btn-secondary">
-            <span>联系我</span>
-            <span class="btn-icon">💌</span>
-          </router-link>
-        </div>
       </div>
     </div>
   </div>
@@ -86,32 +71,38 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { personalInfo, skills } from '@/config/personalInfo'
 
+gsap.registerPlugin(ScrollTrigger)
+
 onMounted(() => {
-  gsap.from('.intro-card', {
-    y: 50,
-    opacity: 0,
-    duration: 0.8,
-    ease: 'power2.out'
+  gsap.utils.toArray('.info-card, .skill-card').forEach((el: any) => {
+    gsap.from(el, {
+      scrollTrigger: {
+        trigger: el,
+        start: 'top 80%',
+        toggleActions: 'play none none none'
+      },
+      y: 50,
+      opacity: 0,
+      duration: 0.8,
+      ease: 'power2.out'
+    })
   })
 
-  gsap.from('.info-card', {
-    y: 50,
-    opacity: 0,
-    duration: 0.6,
-    stagger: 0.1,
-    ease: 'power2.out',
-    delay: 0.3
-  })
-
-  gsap.from('.skill-item', {
-    y: 30,
-    opacity: 0,
-    duration: 0.5,
-    stagger: 0.05,
-    ease: 'power2.out',
-    delay: 0.6
+  gsap.utils.toArray('.skill-progress').forEach((el: any) => {
+    const width = el.style.width
+    gsap.from(el, {
+      scrollTrigger: {
+        trigger: el,
+        start: 'top 80%',
+        toggleActions: 'play none none none'
+      },
+      width: 0,
+      duration: 1.5,
+      ease: 'power2.out'
+    })
   })
 })
 </script>
@@ -129,7 +120,7 @@ onMounted(() => {
 }
 
 .page-title {
-  font-size: 3.5rem;
+  font-size: 4rem;
   font-weight: 700;
   background: linear-gradient(135deg, var(--primary), var(--secondary));
   -webkit-background-clip: text;
@@ -139,7 +130,7 @@ onMounted(() => {
 }
 
 .page-subtitle {
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   color: var(--text);
   opacity: 0.8;
 }
@@ -162,18 +153,41 @@ onMounted(() => {
   border-radius: 30px;
   text-align: center;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .avatar-large {
-  font-size: 8rem;
-  margin-bottom: 1rem;
-  display: inline-block;
+  margin-bottom: 2rem;
+}
+
+.avatar {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 5rem;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+  border: 8px solid white;
   animation: float-avatar 3s ease-in-out infinite;
 }
 
 @keyframes float-avatar {
   0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(5deg); }
+  50% { transform: translateY(-15px) rotate(5deg); }
 }
 
 .intro-card h2 {
@@ -185,14 +199,17 @@ onMounted(() => {
 .intro-card .title {
   font-size: 1.5rem;
   color: var(--secondary);
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
 }
 
 .intro-card .description {
   font-size: 1.2rem;
+  line-height: 1.8;
   color: var(--text);
   opacity: 0.8;
-  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .info-grid {
@@ -216,59 +233,57 @@ onMounted(() => {
 }
 
 .card-icon {
-  font-size: 3rem;
+  font-size: 4rem;
   margin-bottom: 1rem;
   display: inline-block;
   animation: bounce 2s infinite;
 }
 
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
 .info-card h3 {
   font-size: 1.5rem;
-  color: var(--primary);
   margin-bottom: 1rem;
+  color: var(--primary);
 }
 
 .info-card p {
   color: var(--text);
   line-height: 1.6;
+  font-size: 1.1rem;
 }
 
-.bio-section,
 .skills-section {
-  background: white;
-  padding: 3rem;
-  border-radius: 30px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  margin-top: 2rem;
 }
 
-.bio-section h2,
-.skills-section h2 {
-  font-size: 2rem;
-  color: var(--primary);
-  margin-bottom: 1.5rem;
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
   text-align: center;
-}
-
-.bio-section p {
-  font-size: 1.2rem;
-  line-height: 1.8;
-  color: var(--text);
-  opacity: 0.8;
+  margin-bottom: 2rem;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .skills-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 2rem;
 }
 
-.skill-item {
+.skill-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
   text-align: center;
+}
+
+.skill-card:hover {
+  transform: translateY(-10px) scale(1.05);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
 .skill-icon {
@@ -283,10 +298,10 @@ onMounted(() => {
   to { transform: rotate(360deg); }
 }
 
-.skill-item h3 {
-  font-size: 1.2rem;
-  color: var(--primary);
+.skill-card h3 {
+  font-size: 1.5rem;
   margin-bottom: 1rem;
+  color: var(--primary);
 }
 
 .skill-bar {
@@ -310,72 +325,26 @@ onMounted(() => {
   color: var(--text);
 }
 
-.action-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.btn {
-  padding: 1rem 2rem;
-  border: none;
-  border-radius: 50px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.3s ease;
-  font-family: inherit;
-  text-decoration: none;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  color: white;
-  box-shadow: 0 10px 30px rgba(255, 107, 157, 0.3);
-}
-
-.btn-primary:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 15px 40px rgba(255, 107, 157, 0.4);
-}
-
-.btn-secondary {
-  background: white;
-  color: var(--primary);
-  border: 2px solid var(--primary);
-}
-
-.btn-secondary:hover {
-  background: var(--primary);
-  color: white;
-  transform: translateY(-3px);
-}
-
-.btn-icon {
-  font-size: 1.2rem;
-}
-
 @media (max-width: 768px) {
   .page-title {
     font-size: 2.5rem;
   }
 
+  .page-subtitle {
+    font-size: 1.2rem;
+  }
+
   .intro-card {
-    padding: 2rem;
+    padding: 2rem 1.5rem;
   }
 
-  .avatar-large {
-    font-size: 5rem;
+  .avatar {
+    width: 120px;
+    height: 120px;
+    font-size: 4rem;
   }
 
-  .info-grid {
-    grid-template-columns: 1fr;
-  }
-
+  .info-grid,
   .skills-grid {
     grid-template-columns: 1fr;
   }
