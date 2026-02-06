@@ -52,7 +52,8 @@ export default async function handler(req, res) {
     const url = new URL(req.url, `http://${req.headers.host}`)
     const pathname = url.pathname || '/api/comments'
     const idMatch = pathname.match(/^\/api\/comments\/(\d+)/)
-    const commentId = idMatch ? Number(idMatch[1]) : null
+    const idParam = url.searchParams.get('id')
+    const commentId = idMatch ? Number(idMatch[1]) : idParam ? Number(idParam) : null
 
     if (req.method === 'GET') {
       const page = (url.searchParams.get('page') || '').trim()
@@ -201,7 +202,7 @@ export default async function handler(req, res) {
 
     res.setHeader('Allow', 'GET, POST, PUT, DELETE')
     return json(res, 405, { ok: false, error: 'Method Not Allowed' })
-  } catch (e) {
+  } catch {
     return json(res, 500, { ok: false, error: '服务异常' })
   }
 }

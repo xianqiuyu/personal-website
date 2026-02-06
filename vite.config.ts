@@ -63,7 +63,8 @@ export default defineConfig(({ mode }) => {
               const url = new URL(req.url || '/api/comments', 'http://localhost')
               const pathname = url.pathname || '/api/comments'
               const idMatch = pathname.match(/^\/api\/comments\/(\d+)/)
-              const commentId = idMatch ? Number(idMatch[1]) : null
+              const idParam = url.searchParams.get('id')
+              const commentId = idMatch ? Number(idMatch[1]) : idParam ? Number(idParam) : null
 
               if (req.method === 'GET') {
                 const page = (url.searchParams.get('page') || '').trim()

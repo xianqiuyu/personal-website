@@ -254,7 +254,7 @@ const cancelEdit = () => {
 
 const doRemove = async (c: CommentItem) => {
   try {
-    const r = await fetch(`/api/comments/${c.id}`, {
+    const r = await fetch(`/api/comments?id=${encodeURIComponent(String(c.id))}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ anonUserId: anonUserId.value }),
