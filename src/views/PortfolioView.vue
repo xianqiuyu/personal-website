@@ -2,37 +2,20 @@
   <div class="portfolio-page">
     <div class="page-header">
       <h1 class="page-title">我的作品集</h1>
-      <p class="page-subtitle">展示我的项目作品</p>
+      <p class="page-subtitle">暂未公开 · 敬请期待</p>
     </div>
 
     <div class="container">
-      <div class="projects-grid">
-        <div 
-          v-for="(project, index) in projects" 
-          :key="index" 
-          class="project-card"
-          @mouseenter="onProjectHover(index)"
-          @mouseleave="onProjectLeave(index)"
-        >
-          <div class="project-image">
-            <div class="project-placeholder">{{ project.icon }}</div>
-            <div class="project-overlay">
-              <div class="project-links-overlay">
-                <a v-if="project.demo" :href="project.demo" target="_blank" class="project-link-btn">
-                  预览 🔗
-                </a>
-                <a v-if="project.github" :href="project.github" target="_blank" class="project-link-btn">
-                  代码 💻
-                </a>
-              </div>
-            </div>
-          </div>
-          <div class="project-content">
-            <h3>{{ project.name }}</h3>
-            <p>{{ project.description }}</p>
-            <div class="project-tags">
-              <span v-for="tag in project.tags" :key="tag" class="tag">{{ tag }}</span>
-            </div>
+      <div class="hidden-wrap">
+        <div class="hidden-card">
+          <div class="hidden-badge">🔒</div>
+          <h2 class="hidden-title">作品集内容已暂时隐藏</h2>
+          <p class="hidden-desc">
+            目前处于整理与优化阶段，后续会逐步公开更完整、更酷炫的项目展示。
+          </p>
+          <div class="hidden-actions">
+            <router-link class="hidden-btn" to="/contact">联系我</router-link>
+            <router-link class="hidden-btn ghost" to="/">返回首页</router-link>
           </div>
         </div>
       </div>
@@ -43,42 +26,21 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { projects } from '@/config/personalInfo'
-
-gsap.registerPlugin(ScrollTrigger)
-
-const onProjectHover = (index: number) => {
-  gsap.to(`.project-card:nth-child(${index + 1})`, {
-    scale: 1.05,
-    y: -10,
-    duration: 0.3,
-    ease: 'power2.out'
-  })
-}
-
-const onProjectLeave = (index: number) => {
-  gsap.to(`.project-card:nth-child(${index + 1})`, {
-    scale: 1,
-    y: 0,
-    duration: 0.3,
-    ease: 'power2.out'
-  })
-}
 
 onMounted(() => {
-  gsap.utils.toArray('.project-card').forEach((el: any) => {
-    gsap.from(el, {
-      scrollTrigger: {
-        trigger: el,
-        start: 'top 80%',
-        toggleActions: 'play none none none'
-      },
-      y: 50,
-      opacity: 0,
-      duration: 0.8,
-      ease: 'power2.out'
-    })
+  gsap.from('.hidden-card', {
+    y: 30,
+    opacity: 0,
+    duration: 0.8,
+    ease: 'power2.out'
+  })
+
+  gsap.from('.hidden-badge', {
+    scale: 0,
+    rotation: -180,
+    duration: 1,
+    ease: 'back.out(1.7)',
+    delay: 0.1
   })
 })
 </script>
@@ -117,115 +79,100 @@ onMounted(() => {
   padding: 0 2rem 4rem;
 }
 
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 2rem;
-}
-
-.project-card {
-  background: white;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.project-card:hover {
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-}
-
-.project-image {
-  height: 250px;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
+.hidden-wrap {
   display: flex;
-  align-items: center;
   justify-content: center;
+}
+
+.hidden-card {
+  width: min(760px, 100%);
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 28px;
+  padding: 3rem 2.5rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+  border: 2px dashed rgba(255, 107, 157, 0.35);
   position: relative;
   overflow: hidden;
 }
 
-.project-placeholder {
-  font-size: 6rem;
-  z-index: 1;
-  transition: transform 0.3s ease;
-}
-
-.project-card:hover .project-placeholder {
-  transform: scale(1.2) rotate(10deg);
-}
-
-.project-overlay {
+.hidden-card::before {
+  content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  inset: -40%;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 107, 157, 0.22), transparent 50%),
+    radial-gradient(circle at 70% 70%, rgba(78, 205, 196, 0.22), transparent 55%);
+  transform: rotate(8deg);
+  pointer-events: none;
 }
 
-.project-card:hover .project-overlay {
-  opacity: 1;
+.hidden-badge {
+  width: 86px;
+  height: 86px;
+  border-radius: 26px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: grid;
+  place-items: center;
+  font-size: 2.6rem;
+  box-shadow: 0 14px 30px rgba(255, 107, 157, 0.25);
+  position: relative;
+  z-index: 1;
+  margin: 0 auto 1.4rem;
 }
 
-.project-links-overlay {
-  display: flex;
-  gap: 1rem;
-}
-
-.project-link-btn {
-  padding: 0.8rem 1.5rem;
-  background: white;
+.hidden-title {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  font-size: 2rem;
   color: var(--primary);
-  text-decoration: none;
-  border-radius: 25px;
-  font-weight: 600;
-  transition: all 0.3s ease;
+  margin-bottom: 0.8rem;
 }
 
-.project-link-btn:hover {
-  background: var(--primary);
-  color: white;
-  transform: translateY(-3px);
-}
-
-.project-content {
-  padding: 2rem;
-}
-
-.project-content h3 {
-  font-size: 1.8rem;
-  margin-bottom: 1rem;
-  color: var(--primary);
-}
-
-.project-content p {
+.hidden-desc {
+  position: relative;
+  z-index: 1;
+  text-align: center;
   color: var(--text);
-  line-height: 1.6;
-  margin-bottom: 1rem;
   opacity: 0.8;
   font-size: 1.1rem;
+  line-height: 1.8;
+  margin: 0 auto 1.8rem;
+  max-width: 40rem;
 }
 
-.project-tags {
+.hidden-actions {
+  position: relative;
+  z-index: 1;
   display: flex;
+  gap: 1rem;
+  justify-content: center;
   flex-wrap: wrap;
-  gap: 0.5rem;
 }
 
-.tag {
-  padding: 0.4rem 1rem;
-  background: rgba(255, 107, 157, 0.1);
+.hidden-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.9rem 1.6rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 12px 25px rgba(255, 107, 157, 0.22);
+}
+
+.hidden-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 35px rgba(255, 107, 157, 0.26);
+}
+
+.hidden-btn.ghost {
+  background: rgba(255, 255, 255, 0.6);
   color: var(--primary);
-  border-radius: 20px;
-  font-size: 0.9rem;
-  font-weight: 500;
+  border: 2px solid rgba(255, 107, 157, 0.35);
+  box-shadow: none;
 }
 
 @media (max-width: 768px) {
@@ -233,16 +180,12 @@ onMounted(() => {
     font-size: 2.5rem;
   }
 
-  .projects-grid {
-    grid-template-columns: 1fr;
+  .hidden-card {
+    padding: 2.2rem 1.6rem;
   }
 
-  .project-image {
-    height: 200px;
-  }
-
-  .project-placeholder {
-    font-size: 4rem;
+  .hidden-title {
+    font-size: 1.6rem;
   }
 }
 </style>

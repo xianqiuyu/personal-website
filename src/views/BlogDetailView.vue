@@ -41,7 +41,7 @@
             <div class="share-buttons">
               <button class="share-btn" @click="shareToWeChat">
                 <span>💬</span>
-                <span>微信</span>
+                <span>转发到微信</span>
               </button>
               <button class="share-btn" @click="copyLink">
                 <span>🔗</span>
@@ -56,6 +56,37 @@
         <h2>文章未找到</h2>
         <router-link to="/blog" class="back-to-blog">返回博客列表</router-link>
       </div>
+
+      <!-- 微信分享弹窗（二维码） -->
+      <div v-if="showWeChatShare" class="wechat-share-overlay" @click="closeWeChatShare">
+        <div class="wechat-share-modal" @click.stop>
+          <button class="wechat-close" @click="closeWeChatShare">×</button>
+          <h3 class="wechat-title">微信扫码转发</h3>
+          <p class="wechat-subtitle">打开微信扫一扫，把当前页面分享给好友/朋友圈</p>
+
+          <div class="wechat-qr">
+            <div v-if="isGeneratingQr" class="wechat-qr-loading">
+              <div class="spinner"></div>
+              <span>生成二维码中...</span>
+            </div>
+            <img v-else-if="qrDataUrl" :src="qrDataUrl" alt="微信分享二维码" />
+            <div v-else class="wechat-qr-error">
+              <p>二维码生成失败</p>
+              <button class="share-btn" @click="generateQrCode">
+                <span>🔁</span>
+                <span>重试</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="wechat-actions">
+            <button class="share-btn" @click="copyLink">
+              <span>🔗</span>
+              <span>复制链接</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -64,11 +95,41 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { gsap } from 'gsap'
+import QRCode from 'qrcode'
 import { getPostById, type BlogPost } from '@/config/blogPosts'
 
 const route = useRoute()
 const router = useRouter()
 const post = ref<BlogPost | undefined>(undefined)
+
+const showWeChatShare = ref(false)
+const isGeneratingQr = ref(false)
+const qrDataUrl = ref<string>('')
+
+const closeWeChatShare = () => {
+  showWeChatShare.value = false
+}
+
+const generateQrCode = async () => {
+  isGeneratingQr.value = true
+  qrDataUrl.value = ''
+
+  try {
+    qrDataUrl.value = await QRCode.toDataURL(window.location.href, {
+      errorCorrectionLevel: 'M',
+      margin: 1,
+      width: 320,
+      color: {
+        dark: '#0f172a',
+        light: '#ffffff'
+      }
+    })
+  } catch (e) {
+    qrDataUrl.value = ''
+  } finally {
+    isGeneratingQr.value = false
+  }
+}
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
@@ -117,8 +178,29 @@ const escapeHtml = (text: string) => {
   return div.innerHTML
 }
 
-const shareToWeChat = () => {
-  alert('请使用微信扫一扫分享')
+const shareToWeChat = async () => {
+  const url = window.location.href
+  const title = post.value?.title ?? '分享一篇文章'
+
+  // 优先使用系统分享（支持的浏览器会弹出分享面板，移动端体验最好）
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title,
+        text: '我在个人网站看到一篇不错的文章，分享给你～',
+        url
+      })
+      return
+    } catch {
+      // 用户取消分享等情况，继续走二维码兜底
+    }
+  }
+
+  // 兜底：展示二维码（微信扫一扫即可转发）
+  showWeChatShare.value = true
+  if (!qrDataUrl.value) {
+    await generateQrCode()
+  }
 }
 
 const copyLink = () => {
@@ -436,6 +518,135 @@ const highlightCode = () => {
   font-size: 1.2rem;
 }
 
+.wechat-share-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2500;
+  backdrop-filter: blur(6px);
+}
+
+.wechat-share-modal {
+  width: min(520px, 92vw);
+  background: white;
+  border-radius: 28px;
+  padding: 2.2rem 2rem 2rem;
+  position: relative;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
+  animation: modalIn 0.25s ease;
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.wechat-close {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: #f3f4f6;
+  color: var(--text);
+  font-size: 1.6rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.wechat-close:hover {
+  background: var(--primary);
+  color: white;
+  transform: rotate(90deg);
+}
+
+.wechat-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--primary);
+  text-align: center;
+  margin-bottom: 0.4rem;
+}
+
+.wechat-subtitle {
+  text-align: center;
+  color: var(--text);
+  opacity: 0.75;
+  margin-bottom: 1.5rem;
+}
+
+.wechat-qr {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(255, 107, 157, 0.08), rgba(78, 205, 196, 0.08));
+  border: 2px dashed rgba(255, 107, 157, 0.35);
+  min-height: 280px;
+}
+
+.wechat-qr img {
+  width: 260px;
+  height: 260px;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.wechat-qr-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  align-items: center;
+  color: var(--text);
+  opacity: 0.85;
+  font-weight: 600;
+}
+
+.spinner {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 107, 157, 0.2);
+  border-top-color: var(--primary);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.wechat-qr-error {
+  text-align: center;
+  color: var(--text);
+  opacity: 0.9;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.wechat-actions {
+  margin-top: 1.4rem;
+  display: flex;
+  justify-content: center;
+}
+
 .not-found {
   text-align: center;
   padding: 4rem 2rem;
@@ -501,6 +712,15 @@ const highlightCode = () => {
 
   .share-buttons {
     flex-direction: column;
+  }
+
+  .wechat-share-modal {
+    padding: 1.8rem 1.4rem 1.6rem;
+  }
+
+  .wechat-qr img {
+    width: 240px;
+    height: 240px;
   }
 }
 </style>
