@@ -18,9 +18,17 @@ function getClientIp(req) {
 
 export default async function handler(req, res) {
   try {
-    const databaseUrl = process.env.DATABASE_URL
+    const databaseUrl =
+      process.env.DATABASE_URL ||
+      process.env.POSTGRES_URL ||
+      process.env.POSTGRES_PRISMA_URL ||
+      process.env.POSTGRES_URL_NON_POOLING ||
+      process.env.NEON_DATABASE_URL
     if (!databaseUrl) {
-      return json(res, 500, { ok: false, error: 'DATABASE_URL 未配置' })
+      return json(res, 500, {
+        ok: false,
+        error: '数据库连接未配置（请在 Vercel 环境变量中设置 DATABASE_URL 或 POSTGRES_URL 等）',
+      })
     }
 
     const sql = neon(databaseUrl)
