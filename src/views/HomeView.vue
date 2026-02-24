@@ -93,41 +93,6 @@
       </div>
     </section>
 
-    <!-- 项目 -->
-    <section id="projects" class="projects" ref="projectsRef">
-      <div class="container">
-        <h2 class="section-title">我的作品</h2>
-        <div class="projects-grid">
-          <div 
-            v-for="(project, index) in projects" 
-            :key="index" 
-            class="project-card"
-            @mouseenter="onProjectHover(index)"
-            @mouseleave="onProjectLeave(index)"
-          >
-            <div class="project-image">
-              <div class="project-placeholder">{{ project.icon }}</div>
-            </div>
-            <div class="project-content">
-              <h3>{{ project.name }}</h3>
-              <p>{{ project.description }}</p>
-              <div class="project-tags">
-                <span v-for="tag in project.tags" :key="tag" class="tag">{{ tag }}</span>
-              </div>
-              <div class="project-links">
-                <a v-if="project.demo" :href="project.demo" target="_blank" class="project-link">
-                  预览 🔗
-                </a>
-                <a v-if="project.github" :href="project.github" target="_blank" class="project-link">
-                  代码 💻
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- 联系方式 -->
     <section id="contact" class="contact" ref="contactRef">
       <div class="container">
@@ -185,7 +150,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { personalInfo as personalInfoConfig, skills as skillsConfig, projects as projectsConfig, socialLinks as socialLinksConfig } from '@/config/personalInfo'
+import { personalInfo as personalInfoConfig, skills as skillsConfig, socialLinks as socialLinksConfig } from '@/config/personalInfo'
 import WeChatIcon from '@/components/icons/WeChatIcon.vue'
 import QQIcon from '@/components/icons/QQIcon.vue'
 import { useContactInfoModalStore } from '@/stores/contactInfoModal'
@@ -197,7 +162,6 @@ const router = useRouter()
 // 个人信息（从配置文件导入，可在 src/config/personalInfo.ts 中修改）
 const personalInfo = ref(personalInfoConfig)
 const skills = ref(skillsConfig)
-const projects = ref(projectsConfig)
 const socialLinks = ref(socialLinksConfig)
 const contactModal = useContactInfoModalStore()
 
@@ -210,7 +174,6 @@ const buttonsRef = ref<HTMLElement>()
 const imageRef = ref<HTMLElement>()
 const aboutRef = ref<HTMLElement>()
 const skillsRef = ref<HTMLElement>()
-const projectsRef = ref<HTMLElement>()
 const contactRef = ref<HTMLElement>()
 
 // 滚动到指定区域（保留用于首页内部锚点）
@@ -233,25 +196,6 @@ const handleSocialClick = (link: any) => {
   if (link.url && link.url !== '#') {
     window.open(link.url, '_blank')
   }
-}
-
-// 项目卡片悬停效果
-const onProjectHover = (index: number) => {
-  gsap.to(`.project-card:nth-child(${index + 1})`, {
-    scale: 1.05,
-    y: -10,
-    duration: 0.3,
-    ease: 'power2.out'
-  })
-}
-
-const onProjectLeave = (index: number) => {
-  gsap.to(`.project-card:nth-child(${index + 1})`, {
-    scale: 1,
-    y: 0,
-    duration: 0.3,
-    ease: 'power2.out'
-  })
 }
 
 // 初始化动画
@@ -308,7 +252,7 @@ onMounted(() => {
   })
 
   // 滚动触发动画
-  gsap.utils.toArray('.about-card, .skill-card, .project-card').forEach((el: any) => {
+  gsap.utils.toArray('.about-card, .skill-card').forEach((el: any) => {
     gsap.from(el, {
       scrollTrigger: {
         trigger: el,
@@ -733,99 +677,6 @@ onUnmounted(() => {
   color: var(--text);
 }
 
-/* 项目 */
-.projects {
-  padding: 100px 0;
-  background: rgba(255, 255, 255, 0.5);
-}
-
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-}
-
-.project-card {
-  background: white;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.project-card:hover {
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-}
-
-.project-image {
-  height: 200px;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.project-placeholder {
-  font-size: 5rem;
-  z-index: 1;
-}
-
-.project-content {
-  padding: 2rem;
-}
-
-.project-content h3 {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-  color: var(--primary);
-}
-
-.project-content p {
-  color: var(--text);
-  line-height: 1.6;
-  margin-bottom: 1rem;
-  opacity: 0.8;
-}
-
-.project-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.tag {
-  padding: 0.3rem 0.8rem;
-  background: rgba(255, 107, 157, 0.1);
-  color: var(--primary);
-  border-radius: 20px;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.project-links {
-  display: flex;
-  gap: 1rem;
-}
-
-.project-link {
-  padding: 0.5rem 1rem;
-  background: var(--primary);
-  color: white;
-  text-decoration: none;
-  border-radius: 20px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.project-link:hover {
-  background: var(--secondary);
-  transform: translateY(-2px);
-}
-
 /* 联系方式 */
 .contact {
   padding: 100px 0;
@@ -964,8 +815,7 @@ onUnmounted(() => {
   }
 
   .about-content,
-  .skills-grid,
-  .projects-grid {
+  .skills-grid {
     grid-template-columns: 1fr;
   }
 
