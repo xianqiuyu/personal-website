@@ -3,7 +3,7 @@
     <div class="nav-container">
       <router-link to="/" class="logo">
         <span class="logo-icon">🚀</span>
-        <span class="logo-text">于贤秋的个人网站</span>
+        <span class="logo-text">{{ logoText }}</span>
       </router-link>
       <ul class="nav-menu" :class="{ active: menuOpen }">
         <li>
@@ -36,9 +36,12 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import { personalInfo } from '@/config/personalInfo'
 
 const isScrolled = ref(false)
 const menuOpen = ref(false)
+
+const logoText = `${personalInfo.nickname ? personalInfo.nickname + ' · ' : ''}${personalInfo.name}的个人网站`
 
 const handleScroll = () => {
   isScrolled.value = window.scrollY > 50

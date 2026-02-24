@@ -137,11 +137,6 @@
         </div>
       </div>
     </section>
-
-    <!-- 页脚 -->
-    <footer class="footer">
-      <p>© 2024 {{ personalInfo.name || '你的名字' }}. Made with ❤️ and Vue3</p>
-    </footer>
   </div>
 </template>
 
@@ -771,14 +766,6 @@ onUnmounted(() => {
 
 .social-name {
   font-weight: 600;
-}
-
-/* 页脚 */
-.footer {
-  background: var(--text);
-  color: white;
-  text-align: center;
-  padding: 2rem;
 }
 
 /* 响应式设计 */

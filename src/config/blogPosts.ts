@@ -15,6 +15,70 @@ export interface BlogPost {
 
 export const blogPosts: BlogPost[] = [
   {
+    id: 'opensource-projects',
+    title: '开源项目导航：我做过哪些“从零实现/源码分析/工程化”',
+    excerpt: '把 GitHub 上的核心项目按类型梳理一遍：从 mini-vue3 / mini-react 到组件库、后台模板与打包器。',
+    date: '2026-02-25',
+    category: '开源',
+    icon: '🧭',
+    author: 'Locke（于贤秋）',
+    readTime: '8 分钟',
+    tags: ['开源', '项目索引', 'Vue', 'React', '工程化'],
+    content: `
+# 开源项目导航
+
+这篇文章把我 GitHub 上的一些代表性仓库按“学习路径 + 工程价值”梳理一遍，方便你快速找到你关心的方向。
+
+> GitHub 主页：[@xianqiuyu](https://github.com/xianqiuyu)
+
+## 1）源码实现类（从零造轮子，理解原理）
+
+* **mini-vue3**：从零实现 Vue3 核心响应式、computed、虚拟 DOM 渲染器  
+  - 推荐给：想把 Vue3 响应式/渲染器吃透的人  
+  - 链接：[mini-vue3](https://github.com/xianqiuyu/mini-vue3)
+* **mini-react**：实现 React Fiber / Hooks / Scheduler 的迷你版本  
+  - 推荐给：想理解 React16+ 内核的人  
+  - 链接：[mini-react](https://github.com/xianqiuyu/mini-react)
+
+## 2）源码阅读类（体系化笔记，构建认知地图）
+
+* **vue3-source-analysis**：Vue3 源码阅读笔记（响应式 / 虚拟 DOM / 编译器 / 组件系统）  
+  - 链接：[vue3-source-analysis](https://github.com/xianqiuyu/vue3-source-analysis)
+* **react-source-analysis**：React 源码阅读笔记（Fiber / Reconciliation / Hooks / Scheduler）  
+  - 链接：[react-source-analysis](https://github.com/xianqiuyu/react-source-analysis)
+
+## 3）组件库类（工程化与设计系统落地）
+
+* **vue3-component-lib**：参考 Element Plus 的 Vue3 组件库（含总览/Playground）  
+  - 链接：[vue3-component-lib](https://github.com/xianqiuyu/vue3-component-lib)
+* **react-component-lib**：参考 Ant Design 的 React 组件库（每个组件配 demo）  
+  - 链接：[react-component-lib](https://github.com/xianqiuyu/react-component-lib)
+
+## 4）Admin 模板类（路由/权限/工程骨架）
+
+* **vue3-admin-template**：Vue3 + Router + Pinia + Axios 精简后台模板（登录鉴权/角色路由）  
+  - 链接：[vue3-admin-template](https://github.com/xianqiuyu/vue3-admin-template)
+* **react-admin-template**：React Router + Zustand + Axios 后台模板（对齐 Vue 版模型）  
+  - 链接：[react-admin-template](https://github.com/xianqiuyu/react-admin-template)
+
+## 5）工程化 / 构建类（打包器原理）
+
+* **mini-webpack**：依赖解析 + 模块打包 + runtime require 的迷你版 Webpack  
+  - 链接：[mini-webpack](https://github.com/xianqiuyu/mini-webpack)
+* **mini-bundler**：AST + 依赖图 + Loader/Plugin + Babel 流程的迷你打包器  
+  - 链接：[mini-bundler](https://github.com/xianqiuyu/mini-bundler)
+
+## 6）Hooks / 工具类（高复用业务抽象）
+
+* **react-hooks-collection**：业务级 Hooks 集合（useRequest / useVirtualList / useWebSocket 等）  
+  - 链接：[react-hooks-collection](https://github.com/xianqiuyu/react-hooks-collection)
+
+## 后记
+
+后续我会把每个项目背后的“设计取舍、踩坑、可复用套路”拆成系列文章发出来，也欢迎你在 GitHub 上提 Issue 交流。
+    `
+  },
+  {
     id: 'vue3-composition-api',
     title: 'Vue3 Composition API 深度解析',
     excerpt: '深入探讨 Vue3 的 Composition API，了解其设计理念和最佳实践...',

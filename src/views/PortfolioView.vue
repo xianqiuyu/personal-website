@@ -2,45 +2,110 @@
   <div class="portfolio-page">
     <div class="page-header">
       <h1 class="page-title">我的作品集</h1>
-      <p class="page-subtitle">暂未公开 · 敬请期待</p>
+      <p class="page-subtitle">开源项目与工程实践精选</p>
     </div>
 
     <div class="container">
-      <div class="hidden-wrap">
-        <div class="hidden-card">
-          <div class="hidden-badge">🔒</div>
-          <h2 class="hidden-title">作品集内容已暂时隐藏</h2>
-          <p class="hidden-desc">
-            目前处于整理与优化阶段，后续会逐步公开更完整、更酷炫的项目展示。
-          </p>
-          <div class="hidden-actions">
-            <router-link class="hidden-btn" to="/contact">联系我</router-link>
-            <router-link class="hidden-btn ghost" to="/">返回首页</router-link>
+      <div class="portfolio-toolbar">
+        <div class="toolbar-left">
+          <div class="hint">
+            <span class="hint-icon">💡</span>
+            <span class="hint-text">点击卡片按钮即可跳转到 GitHub / Demo</span>
           </div>
         </div>
+        <div class="toolbar-right">
+          <button
+            v-for="c in categories"
+            :key="c"
+            class="chip"
+            :class="{ active: selectedCategory === c }"
+            type="button"
+            @click="selectedCategory = c"
+          >
+            {{ c }}
+          </button>
+        </div>
+      </div>
+
+      <div class="project-grid">
+        <article v-for="p in filteredProjects" :key="p.name" class="project-card">
+          <div class="project-head">
+            <div class="project-icon">{{ p.icon }}</div>
+            <div class="project-title">
+              <h2 class="name">{{ p.name }}</h2>
+              <div class="badges">
+                <span v-if="p.category" class="badge">{{ p.category }}</span>
+              </div>
+            </div>
+          </div>
+
+          <p class="desc">{{ p.description }}</p>
+
+          <ul v-if="p.highlights?.length" class="highlights">
+            <li v-for="h in p.highlights" :key="h">{{ h }}</li>
+          </ul>
+
+          <div class="tags">
+            <span v-for="t in p.tags" :key="t" class="tag">{{ t }}</span>
+          </div>
+
+          <div class="actions">
+            <button
+              v-if="p.github"
+              class="btn"
+              type="button"
+              @click="openUrl(p.github)"
+            >
+              <span>GitHub</span>
+              <span class="btn-icon">🐙</span>
+            </button>
+            <button
+              v-if="p.demo"
+              class="btn ghost"
+              type="button"
+              @click="openUrl(p.demo)"
+            >
+              <span>Demo</span>
+              <span class="btn-icon">🔗</span>
+            </button>
+          </div>
+        </article>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { gsap } from 'gsap'
+import { projects, type Project } from '@/config/personalInfo'
+
+const selectedCategory = ref('全部')
+
+const categories = computed(() => {
+  const set = new Set<string>()
+  projects.forEach(p => {
+    if (p.category) set.add(p.category)
+  })
+  return ['全部', ...Array.from(set)]
+})
+
+const filteredProjects = computed<Project[]>(() => {
+  if (selectedCategory.value === '全部') return projects
+  return projects.filter(p => p.category === selectedCategory.value)
+})
+
+const openUrl = (url: string) => {
+  window.open(url, '_blank', 'noopener,noreferrer')
+}
 
 onMounted(() => {
-  gsap.from('.hidden-card', {
-    y: 30,
+  gsap.from('.project-card', {
+    y: 18,
     opacity: 0,
-    duration: 0.8,
-    ease: 'power2.out'
-  })
-
-  gsap.from('.hidden-badge', {
-    scale: 0,
-    rotation: -180,
-    duration: 1,
-    ease: 'back.out(1.7)',
-    delay: 0.1
+    duration: 0.6,
+    ease: 'power2.out',
+    stagger: 0.06
   })
 })
 </script>
@@ -79,100 +144,229 @@ onMounted(() => {
   padding: 0 2rem 4rem;
 }
 
-.hidden-wrap {
+.portfolio-toolbar {
   display: flex;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
 
-.hidden-card {
-  width: min(760px, 100%);
+.hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.8rem 1rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 107, 157, 0.25);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+  color: var(--text);
+}
+
+.hint-icon {
+  font-size: 1.2rem;
+}
+
+.hint-text {
+  opacity: 0.85;
+  font-weight: 600;
+}
+
+.toolbar-right {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+.chip {
+  border: 2px solid rgba(255, 107, 157, 0.3);
+  background: rgba(255, 255, 255, 0.65);
+  color: var(--primary);
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 800;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.chip:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 107, 157, 0.5);
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.chip.active {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border-color: transparent;
+  color: white;
+  box-shadow: 0 14px 30px rgba(255, 107, 157, 0.22);
+}
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.project-card {
   background: rgba(255, 255, 255, 0.92);
-  border-radius: 28px;
-  padding: 3rem 2.5rem;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
-  border: 2px dashed rgba(255, 107, 157, 0.35);
+  border-radius: 24px;
+  padding: 1.8rem 1.6rem 1.5rem;
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 107, 157, 0.18);
   position: relative;
   overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.hidden-card::before {
+.project-card::before {
   content: '';
   position: absolute;
-  inset: -40%;
-  background: radial-gradient(circle at 30% 30%, rgba(255, 107, 157, 0.22), transparent 50%),
-    radial-gradient(circle at 70% 70%, rgba(78, 205, 196, 0.22), transparent 55%);
-  transform: rotate(8deg);
+  inset: -45%;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 107, 157, 0.18), transparent 55%),
+    radial-gradient(circle at 70% 70%, rgba(78, 205, 196, 0.16), transparent 55%);
+  transform: rotate(10deg);
   pointer-events: none;
 }
 
-.hidden-badge {
-  width: 86px;
-  height: 86px;
-  border-radius: 26px;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  display: grid;
-  place-items: center;
-  font-size: 2.6rem;
-  box-shadow: 0 14px 30px rgba(255, 107, 157, 0.25);
-  position: relative;
-  z-index: 1;
-  margin: 0 auto 1.4rem;
+.project-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.14);
 }
 
-.hidden-title {
-  position: relative;
-  z-index: 1;
-  text-align: center;
-  font-size: 2rem;
-  color: var(--primary);
-  margin-bottom: 0.8rem;
-}
-
-.hidden-desc {
-  position: relative;
-  z-index: 1;
-  text-align: center;
-  color: var(--text);
-  opacity: 0.8;
-  font-size: 1.1rem;
-  line-height: 1.8;
-  margin: 0 auto 1.8rem;
-  max-width: 40rem;
-}
-
-.hidden-actions {
+.project-head {
   position: relative;
   z-index: 1;
   display: flex;
+  align-items: flex-start;
   gap: 1rem;
-  justify-content: center;
+  margin-bottom: 0.9rem;
+}
+
+.project-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: grid;
+  place-items: center;
+  font-size: 1.9rem;
+  box-shadow: 0 14px 30px rgba(255, 107, 157, 0.18);
+  flex: 0 0 auto;
+}
+
+.project-title .name {
+  font-size: 1.5rem;
+  color: var(--primary);
+  margin: 0 0 0.35rem;
+  line-height: 1.2;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(78, 205, 196, 0.16);
+  color: #0f766e;
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.desc {
+  position: relative;
+  z-index: 1;
+  color: var(--text);
+  opacity: 0.85;
+  line-height: 1.75;
+  margin-bottom: 0.9rem;
+}
+
+.highlights {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 1rem;
+  padding-left: 1.1rem;
+  color: var(--text);
+  opacity: 0.85;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.highlights li {
+  line-height: 1.55;
+}
+
+.tags {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.1rem;
+}
+
+.tag {
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(255, 107, 157, 0.1);
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 0.8rem;
   flex-wrap: wrap;
 }
 
-.hidden-btn {
+.btn {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding: 0.9rem 1.6rem;
+  gap: 0.5rem;
+  padding: 0.7rem 1.1rem;
   border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-weight: 800;
+  font-family: inherit;
   background: linear-gradient(135deg, var(--primary), var(--secondary));
-  color: #fff;
-  text-decoration: none;
-  font-weight: 700;
+  color: white;
+  box-shadow: 0 14px 30px rgba(255, 107, 157, 0.18);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 12px 25px rgba(255, 107, 157, 0.22);
 }
 
-.hidden-btn:hover {
+.btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 18px 35px rgba(255, 107, 157, 0.26);
+  box-shadow: 0 18px 38px rgba(255, 107, 157, 0.22);
 }
 
-.hidden-btn.ghost {
-  background: rgba(255, 255, 255, 0.6);
+.btn.ghost {
+  background: rgba(255, 255, 255, 0.75);
   color: var(--primary);
   border: 2px solid rgba(255, 107, 157, 0.35);
   box-shadow: none;
+}
+
+.btn.ghost:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.btn-icon {
+  font-size: 1.1rem;
 }
 
 @media (max-width: 768px) {
@@ -180,12 +374,13 @@ onMounted(() => {
     font-size: 2.5rem;
   }
 
-  .hidden-card {
-    padding: 2.2rem 1.6rem;
+  .portfolio-toolbar {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .hidden-title {
-    font-size: 1.6rem;
+  .toolbar-right {
+    justify-content: flex-start;
   }
 }
 </style>

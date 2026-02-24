@@ -2,9 +2,9 @@
   <footer class="footer">
     <div class="footer-content">
       <div class="footer-section">
-        <h3>于贤秋</h3>
-        <p>前端工程师</p>
-        <p>热爱创造酷炫的交互体验</p>
+        <h3>{{ displayName }}</h3>
+        <p>{{ personalInfo.title }}</p>
+        <p>{{ personalInfo.description }}</p>
       </div>
       <div class="footer-section">
         <h4>快速链接</h4>
@@ -28,7 +28,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <p>© 2024 于贤秋. Made with ❤️ and Vue3</p>
+      <p>© {{ new Date().getFullYear() }} {{ personalInfo.name }}. Made with ❤️ and Vue3</p>
     </div>
 
     <!-- 微信分享弹窗（二维码） -->
@@ -62,6 +62,7 @@ import { personalInfo } from '@/config/personalInfo'
 const showWeChatShare = ref(false)
 const isGeneratingQr = ref(false)
 const qrDataUrl = ref<string>('')
+const displayName = personalInfo.nickname ? `${personalInfo.nickname}（${personalInfo.name}）` : personalInfo.name
 
 const closeWeChatShare = () => {
   showWeChatShare.value = false

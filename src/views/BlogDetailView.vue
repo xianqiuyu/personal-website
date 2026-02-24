@@ -147,6 +147,8 @@ const formatContent = (content: string) => {
     .replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
       return `<pre><code class="language-${lang || 'text'}">${escapeHtml(code.trim())}</code></pre>`
     })
+    // 链接（简单支持 [text](url)）
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
     // 行内代码
     .replace(/`([^`]+)`/g, '<code>$1</code>')
     // 标题
