@@ -79,14 +79,17 @@
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { gsap } from 'gsap'
-import { projects, type Project } from '@/config/personalInfo'
+import { getProjects, type Project } from '@/config/personalInfo'
 
 const { t } = useI18n()
 const selectedCategory = ref<string>('__all__')
 
+// 使用 computed 让 projects 响应语言变化
+const projects = computed(() => getProjects())
+
 const categories = computed(() => {
   const set = new Set<string>()
-  projects.forEach(p => {
+  projects.value.forEach(p => {
     if (p.category) set.add(p.category)
   })
   return ['__all__', ...Array.from(set)]
@@ -100,21 +103,13 @@ const getCategoryDisplayName = (category: string) => {
 }
 
 const getProjectDescription = (projectName: string) => {
-  const projectKey = `projects.${projectName}`
-  return t(`${projectKey}.description`, projects.find(p => p.name === projectName)?.description || '')
+  const project = projects.value.find(p => p.name === projectName)
+  return project?.description || ''
 }
 
 const getProjectHighlights = (projectName: string) => {
-  const projectKey = `projects.${projectName}.highlights`
-  try {
-    const highlights = t(projectKey, [])
-    if (Array.isArray(highlights) && highlights.length > 0) {
-      return highlights
-    }
-  } catch {
-    // fallback to original highlights
-  }
-  return projects.find(p => p.name === projectName)?.highlights || []
+  const project = projects.value.find(p => p.name === projectName)
+  return project?.highlights || []
 }
 
 const getTagDisplayName = (tag: string) => {
@@ -122,8 +117,8 @@ const getTagDisplayName = (tag: string) => {
 }
 
 const filteredProjects = computed<Project[]>(() => {
-  if (selectedCategory.value === '__all__') return projects
-  return projects.filter(p => p.category === selectedCategory.value)
+  if (selectedCategory.value === '__all__') return projects.value
+  return projects.value.filter(p => p.category === selectedCategory.value)
 })
 
 const openUrl = (url: string) => {

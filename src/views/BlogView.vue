@@ -35,15 +35,15 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { getAllPosts, type BlogPost } from '@/config/blogPosts'
+import { useRouterWithLang } from '@/composables/useRouterWithLang'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const router = useRouter()
+const { pushWithLang } = useRouterWithLang()
 const { t, locale } = useI18n()
 
 // 获取博客文章并处理国际化
@@ -76,7 +76,7 @@ const formatDate = (dateString: string) => {
 }
 
 const viewPost = (post: BlogPost) => {
-  router.push(`/blog/${post.id}`)
+  pushWithLang(`/blog/${post.id}`)
 }
 
 onMounted(() => {

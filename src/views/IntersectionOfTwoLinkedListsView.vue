@@ -132,10 +132,10 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, onUnmounted, nextTick, computed } from 'vue'
-import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { useRouterWithLang } from '@/composables/useRouterWithLang'
 
-const router = useRouter()
+const { pushWithLang } = useRouterWithLang()
 const { t } = useI18n()
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 
@@ -471,7 +471,7 @@ const resetDemo = () => {
 }
 
 const goBack = () => {
-  router.push('/algorithms/hot100')
+  pushWithLang('/algorithms/hot100')
 }
 
 const getDifficultyText = (difficulty: string) => {

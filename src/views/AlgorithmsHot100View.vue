@@ -42,10 +42,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { useRouterWithLang } from '@/composables/useRouterWithLang'
 
-const router = useRouter()
+const { pushWithLang } = useRouterWithLang()
 const { t } = useI18n()
 
 interface Problem {
@@ -80,7 +80,7 @@ const problems = computed(() => [
 const goToProblem = (id: string) => {
   const problem = problems.value.find(p => p.id === id)
   if (problem) {
-    router.push(problem.route)
+    pushWithLang(problem.route)
   }
 }
 

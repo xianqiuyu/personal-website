@@ -7,25 +7,25 @@
       </router-link>
       <ul class="nav-menu" :class="{ active: menuOpen }">
         <li>
-          <router-link to="/" @click="closeMenu">{{ $t('nav.home') }}</router-link>
+          <router-link :to="getLink('/')" @click="closeMenu">{{ $t('nav.home') }}</router-link>
         </li>
         <li>
-          <router-link to="/about" @click="closeMenu">{{ $t('nav.about') }}</router-link>
+          <router-link :to="getLink('/about')" @click="closeMenu">{{ $t('nav.about') }}</router-link>
         </li>
         <li>
-          <router-link to="/portfolio" @click="closeMenu">{{ $t('nav.portfolio') }}</router-link>
+          <router-link :to="getLink('/portfolio')" @click="closeMenu">{{ $t('nav.portfolio') }}</router-link>
         </li>
         <li>
-          <router-link to="/blog" @click="closeMenu">{{ $t('nav.blog') }}</router-link>
+          <router-link :to="getLink('/blog')" @click="closeMenu">{{ $t('nav.blog') }}</router-link>
         </li>
         <li>
-          <router-link to="/footprints" @click="closeMenu">{{ $t('nav.footprints') }}</router-link>
+          <router-link :to="getLink('/footprints')" @click="closeMenu">{{ $t('nav.footprints') }}</router-link>
         </li>
         <li>
-          <router-link to="/algorithms/hot100" @click="closeMenu">{{ $t('nav.algorithms') }}</router-link>
+          <router-link :to="getLink('/algorithms/hot100')" @click="closeMenu">{{ $t('nav.algorithms') }}</router-link>
         </li>
         <li>
-          <router-link to="/contact" @click="closeMenu">{{ $t('nav.contact') }}</router-link>
+          <router-link :to="getLink('/contact')" @click="closeMenu">{{ $t('nav.contact') }}</router-link>
         </li>
       </ul>
       <div class="nav-actions">
@@ -45,9 +45,14 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRouter, useRoute } from 'vue-router'
 import { personalInfo } from '@/config/personalInfo'
+import { useRouterWithLang } from '@/composables/useRouterWithLang'
 
 const { t, locale } = useI18n()
+const router = useRouter()
+const route = useRoute()
+const { pushWithLang, getRouteWithLang } = useRouterWithLang()
 const isScrolled = ref(false)
 const menuOpen = ref(false)
 
@@ -65,8 +70,50 @@ const logoText = computed(() => {
 
 const toggleLocale = () => {
   const newLocale = currentLocale.value === 'zh' ? 'en' : 'zh'
+  
+  // 先更新语言设置
   locale.value = newLocale
   localStorage.setItem('locale', newLocale)
+  
+  // 获取当前路径的基础路径（移除语言前缀）
+  let basePath = route.path
+  if (basePath.startsWith('/en/')) {
+    basePath = basePath.replace('/en', '')
+  } else if (basePath === '/en') {
+    basePath = '/'
+  }
+  
+  // 确保基础路径不为空
+  if (!basePath || basePath === '') {
+    basePath = '/'
+  }
+  
+  // 根据新语言构建路径
+  let newPath: string
+  if (newLocale === 'en') {
+    // 切换到英文，添加 /en 前缀
+    if (basePath === '/') {
+      newPath = '/en'
+    } else {
+      newPath = `/en${basePath}`
+    }
+  } else {
+    // 切换到中文，使用基础路径（已移除 /en 前缀）
+    newPath = basePath
+  }
+  
+  // 使用 replace 更新路径，保持查询参数
+  router.replace({
+    path: newPath,
+    query: route.query
+  }).catch(() => {
+    // 如果路由不存在，忽略错误（可能是路由守卫导致的）
+  })
+}
+
+// 生成带语言参数的路由链接
+const getLink = (path: string) => {
+  return getRouteWithLang(path)
 }
 
 const handleScroll = () => {

@@ -89,11 +89,18 @@ export function getSkills(): Skill[] {
   const icons = ['⚡', '⚛️', '📘', '💛', '🧰', '🚀', '📦', '🟢', '🏗️', '🎨', '🌐', '🔧']
   const levels = [92, 88, 90, 95, 90, 88, 88, 80, 86, 85, 95, 85]
 
-  return skillNames.map((name, index) => ({
-    name: t(`skills.${name}`) || name,
-    icon: icons[index],
-    level: levels[index]
-  }))
+  return skillNames.map((name, index) => {
+    // 对于包含点号的技能名称，将点号移除作为翻译键
+    // 例如 "Node.js" -> "Nodejs"，但显示时仍显示 "Node.js"
+    const skillKey = name.replace(/\./g, '') // 移除点号，Node.js -> Nodejs
+    const translatedName = t(`skills.${skillKey}`) || name
+
+    return {
+      name: translatedName,
+      icon: icons[index],
+      level: levels[index]
+    }
+  })
 }
 
 // 为了向后兼容，导出默认值

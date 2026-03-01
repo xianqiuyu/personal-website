@@ -93,14 +93,15 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { gsap } from 'gsap'
 import QRCode from 'qrcode'
 import { getPostById, type BlogPost } from '@/config/blogPosts'
+import { useRouterWithLang } from '@/composables/useRouterWithLang'
 
 const route = useRoute()
-const router = useRouter()
+const { pushWithLang } = useRouterWithLang()
 const { t, locale } = useI18n()
 const post = ref<BlogPost | undefined>(undefined)
 
@@ -222,7 +223,7 @@ onMounted(() => {
   if (!post.value) {
     // 如果文章不存在，3秒后跳转回博客列表
     setTimeout(() => {
-      router.push('/blog')
+      pushWithLang('/blog')
     }, 3000)
     return
   }
