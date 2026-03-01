@@ -1,8 +1,8 @@
 <template>
   <div class="portfolio-page">
     <div class="page-header">
-      <h1 class="page-title">我的作品集</h1>
-      <p class="page-subtitle">开源项目与工程实践精选</p>
+      <h1 class="page-title">{{ $t('portfolio.title') }}</h1>
+      <p class="page-subtitle">{{ $t('portfolio.subtitle') }}</p>
     </div>
 
     <div class="container">
@@ -10,7 +10,7 @@
         <div class="toolbar-left">
           <div class="hint">
             <span class="hint-icon">💡</span>
-            <span class="hint-text">点击卡片按钮即可跳转到 GitHub / Demo</span>
+            <span class="hint-text">{{ $t('portfolio.hint') }}</span>
           </div>
         </div>
         <div class="toolbar-right">
@@ -22,7 +22,7 @@
             type="button"
             @click="selectedCategory = c"
           >
-            {{ c }}
+            {{ getCategoryDisplayName(c) }}
           </button>
         </div>
       </div>
@@ -34,19 +34,19 @@
             <div class="project-title">
               <h2 class="name">{{ p.name }}</h2>
               <div class="badges">
-                <span v-if="p.category" class="badge">{{ p.category }}</span>
+                <span v-if="p.category" class="badge">{{ getCategoryDisplayName(p.category) }}</span>
               </div>
             </div>
           </div>
 
-          <p class="desc">{{ p.description }}</p>
+          <p class="desc">{{ getProjectDescription(p.name) }}</p>
 
-          <ul v-if="p.highlights?.length" class="highlights">
-            <li v-for="h in p.highlights" :key="h">{{ h }}</li>
+          <ul v-if="getProjectHighlights(p.name)?.length" class="highlights">
+            <li v-for="h in getProjectHighlights(p.name)" :key="h">{{ h }}</li>
           </ul>
 
           <div class="tags">
-            <span v-for="t in p.tags" :key="t" class="tag">{{ t }}</span>
+            <span v-for="tag in p.tags" :key="tag" class="tag">{{ getTagDisplayName(tag) }}</span>
           </div>
 
           <div class="actions">
@@ -56,7 +56,7 @@
               type="button"
               @click="openUrl(p.github)"
             >
-              <span>GitHub</span>
+              <span>{{ $t('portfolio.github') }}</span>
               <span class="btn-icon">🐙</span>
             </button>
             <button
@@ -65,7 +65,7 @@
               type="button"
               @click="openUrl(p.demo)"
             >
-              <span>Demo</span>
+              <span>{{ $t('portfolio.demo') }}</span>
               <span class="btn-icon">🔗</span>
             </button>
           </div>
@@ -77,21 +77,52 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { gsap } from 'gsap'
 import { projects, type Project } from '@/config/personalInfo'
 
-const selectedCategory = ref('全部')
+const { t } = useI18n()
+const selectedCategory = ref<string>('__all__')
 
 const categories = computed(() => {
   const set = new Set<string>()
   projects.forEach(p => {
     if (p.category) set.add(p.category)
   })
-  return ['全部', ...Array.from(set)]
+  return ['__all__', ...Array.from(set)]
 })
 
+const getCategoryDisplayName = (category: string) => {
+  if (category === '__all__') {
+    return t('portfolio.all')
+  }
+  return t(`portfolio.categories.${category}`, category)
+}
+
+const getProjectDescription = (projectName: string) => {
+  const projectKey = `projects.${projectName}`
+  return t(`${projectKey}.description`, projects.find(p => p.name === projectName)?.description || '')
+}
+
+const getProjectHighlights = (projectName: string) => {
+  const projectKey = `projects.${projectName}.highlights`
+  try {
+    const highlights = t(projectKey, [])
+    if (Array.isArray(highlights) && highlights.length > 0) {
+      return highlights
+    }
+  } catch {
+    // fallback to original highlights
+  }
+  return projects.find(p => p.name === projectName)?.highlights || []
+}
+
+const getTagDisplayName = (tag: string) => {
+  return t(`tags.${tag}`, tag)
+}
+
 const filteredProjects = computed<Project[]>(() => {
-  if (selectedCategory.value === '全部') return projects
+  if (selectedCategory.value === '__all__') return projects
   return projects.filter(p => p.category === selectedCategory.value)
 })
 

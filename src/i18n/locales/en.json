@@ -1,0 +1,452 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "portfolio": "Portfolio",
+    "blog": "Blog",
+    "footprints": "Footprints",
+    "algorithms": "Algorithms Hot 100",
+    "contact": "Contact",
+    "chinese": "中",
+    "switchToEnglish": "Switch to English",
+    "switchToChinese": "Switch to Chinese"
+  },
+  "home": {
+    "greeting": "Hi, I'm",
+    "contactMe": "Contact Me",
+    "viewPortfolio": "View Portfolio",
+    "learnMore": "Learn More",
+    "aboutMe": "About Me",
+    "skills": "Skills",
+    "skillsTree": "Skills Tree",
+    "projects": "Projects",
+    "contact": "Contact",
+    "contactMeTitle": "Contact Me",
+    "education": "Education",
+    "experience": "Experience",
+    "hobbies": "Hobbies",
+    "defaultName": "Your Name",
+    "defaultTitle": "Frontend Engineer",
+    "defaultDescription": "Passionate about creating amazing interactive experiences and making the world better with code ✨",
+    "defaultEducation": "Computer Science",
+    "defaultExperience": "3+ years of frontend development experience",
+    "defaultHobbies": "Programming, Design, Music, Travel",
+    "defaultBio": "I'm a passionate frontend engineer focused on creating beautiful and powerful user interfaces. I love learning new technologies, exploring innovative solutions, and turning ideas into reality."
+  },
+  "algorithms": {
+    "hot100": "LeetCode Hot 100",
+    "subtitle": "Top 100 high-frequency algorithm problems to help with coding interviews",
+    "backToHot100": "Back to Hot 100",
+    "startDemo": "Start Demo",
+    "demoing": "Demoing...",
+    "reset": "Reset",
+    "nextStep": "Next Step",
+    "speed": "Speed",
+    "animationDemo": "Algorithm Animation Demo",
+    "codeImplementation": "Code Implementation",
+    "solutionCode": "Solution Code",
+    "detailedExplanation": "Detailed Explanation",
+    "complexityAnalysis": "Complexity Analysis",
+    "timeComplexity": "Time Complexity",
+    "spaceComplexity": "Space Complexity",
+    "executionSteps": "Execution Steps",
+    "listA": "Linked List A",
+    "listB": "Linked List B",
+    "complexityDesc1": "m and n are the lengths of the two linked lists, at most traversing m + n nodes",
+    "complexityDesc2": "Only two pointer variables are used, space complexity is constant",
+    "complexityDesc3": "n is the number of nodes in the binary tree, worst case needs to traverse all nodes",
+    "complexityDesc4": "h is the height of the binary tree, the depth of the recursive call stack is the height of the tree"
+  },
+  "intersection": {
+    "title": "Intersection of Two Linked Lists",
+    "description": "Given the heads of two singly linked-lists headA and headB, return the node at which the two lists intersect. If the two linked lists have no intersection at all, return null.",
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "tags": {
+      "linkedList": "Linked List",
+      "twoPointers": "Two Pointers",
+      "hashTable": "Hash Table"
+    },
+    "pointerA": "Pointer A",
+    "pointerB": "Pointer B",
+    "intersectionNode": "Intersection Node",
+    "notStarted": "Not Started",
+    "node": "Node",
+    "value": "Value",
+    "steps": {
+      "init": "Initialize: Pointer A points to head of list A (value {valA}), Pointer B points to head of list B (value {valB})",
+      "switchA": "Pointer A reaches end of list A, switch to head of list B (value {val})",
+      "switchB": "Pointer B reaches end of list B, switch to head of list A (value {val})",
+      "move": "Pointer A={valA} ({posA}), B={valB} ({posB}), move one step simultaneously",
+      "found": "🎯 Found intersection node! Value is {val}, located at list A[{indexA}] and list B[{indexB}]",
+      "notFound": "The two linked lists have no intersection (both pointers become null)"
+    },
+    "position": {
+      "inA": "in A",
+      "inB": "in B"
+    }
+  },
+  "lca": {
+    "title": "Lowest Common Ancestor of a Binary Tree",
+    "description": "Given a binary tree, find the lowest common ancestor (LCA) of two given nodes in the tree. According to the definition of LCA on Wikipedia: 'The lowest common ancestor is defined between two nodes p and q as the lowest node in T that has both p and q as descendants (where we allow a node to be a descendant of itself).'",
+    "targetP": "Target Node P",
+    "targetQ": "Target Node Q",
+    "lca": "Lowest Common Ancestor",
+    "notSet": "Not Set",
+    "tags": {
+      "binaryTree": "Binary Tree",
+      "dfs": "Depth-First Search",
+      "recursion": "Recursion"
+    },
+    "steps": {
+      "start": "Start finding the lowest common ancestor of nodes {p} and {q}",
+      "visit": "Visit node {val}",
+      "null": "Node is null, return null",
+      "isTarget": "Node {val} is one of the target nodes, return this node",
+      "searchLeft": "Recursively search left subtree",
+      "searchRight": "Recursively search right subtree",
+      "foundLCA": "Both left and right subtrees of node {val} contain target nodes, {val} is the lowest common ancestor!",
+      "returnLeft": "Left subtree found target node, return node {val} upward",
+      "returnRight": "Right subtree found target node, return node {val} upward",
+      "notFound": "Target nodes not found in subtrees of node {val}, return null",
+      "result": "🎯 Found lowest common ancestor: node {val}"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "retry": "Retry",
+    "fillAllFields": "Please fill in all required fields",
+    "openingEmailClient": "Opening email client..."
+  },
+  "about": {
+    "title": "About Me",
+    "subtitle": "Learn more about me",
+    "mySkills": "My Skills",
+    "education": "Education",
+    "experience": "Experience",
+    "location": "Location",
+    "hobbies": "Hobbies"
+  },
+  "contact": {
+    "title": "Contact Me",
+    "subtitle": "Let's create something amazing together",
+    "contactInfo": "Contact Information",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "socialMedia": "Social Media",
+    "sendMessage": "Send Message",
+    "name": "Name",
+    "namePlaceholder": "Please enter your name",
+    "emailPlaceholder": "Please enter your email",
+    "subject": "Subject",
+    "subjectPlaceholder": "Please enter message subject",
+    "message": "Message",
+    "messagePlaceholder": "Please enter your message...",
+    "sending": "Sending...",
+    "sendSuccess": "Message sent successfully! I will reply to you as soon as possible.",
+    "sendFailed": "Failed to send, please try again later or send an email directly to",
+    "nameLabel": "Name:",
+    "emailLabel": "Email:"
+  },
+  "portfolio": {
+    "title": "My Portfolio",
+    "subtitle": "Open source projects and engineering practices",
+    "hint": "Click card buttons to jump to GitHub / Demo",
+    "all": "All",
+    "github": "GitHub",
+    "demo": "Demo",
+    "categories": {
+      "个人作品": "Personal Projects",
+      "源码实现": "Source Implementation",
+      "源码阅读": "Source Reading",
+      "组件库": "Component Library",
+      "Admin 模板": "Admin Template",
+      "Hooks / 工具": "Hooks / Tools",
+      "工程化 / 构建": "Engineering / Build"
+    }
+  },
+  "blog": {
+    "title": "My Blog",
+    "subtitle": "Sharing technical insights and life reflections",
+    "readMore": "Read More",
+    "backToList": "Back to Blog List",
+    "shareArticle": "Share this article",
+    "shareToWeChat": "Share to WeChat",
+    "copyLink": "Copy Link",
+    "linkCopied": "Link copied to clipboard!",
+    "articleNotFound": "Article not found",
+    "wechatShareTitle": "WeChat QR Code Share",
+    "wechatShareSubtitle": "Open WeChat scan, share this page to friends/moments",
+    "generatingQr": "Generating QR code...",
+    "wechatQrAlt": "WeChat share QR code",
+    "qrGenerateFailed": "QR code generation failed",
+    "shareText": "I found a great article on my personal website, sharing it with you～",
+    "readTime": "{time}",
+    "categories": {
+      "开源": "Open Source",
+      "前端开发": "Frontend Development",
+      "编程语言": "Programming Languages",
+      "工程化": "Engineering",
+      "后端开发": "Backend Development",
+      "架构设计": "Architecture Design",
+      "生活感悟": "Life Reflections"
+    },
+    "posts": {
+      "opensource-projects": {
+        "title": "Open Source Projects Navigation: What I've Built from Scratch / Source Analysis / Engineering",
+        "excerpt": "Organizing core projects on GitHub by type: from mini-vue3 / mini-react to component libraries, admin templates, and bundlers."
+      },
+      "vue3-composition-api": {
+        "title": "Deep Dive into Vue3 Composition API",
+        "excerpt": "Exploring Vue3's Composition API in depth, understanding its design philosophy and best practices..."
+      },
+      "typescript-advanced-types": {
+        "title": "Advanced TypeScript Type System",
+        "excerpt": "Master TypeScript's advanced type features to improve code quality and development efficiency..."
+      },
+      "react-hooks-practice": {
+        "title": "React Hooks Practical Tips",
+        "excerpt": "Sharing practical experience with React Hooks in real projects and solutions to common problems..."
+      },
+      "angular-enterprise-architecture": {
+        "title": "Angular Enterprise Application Architecture",
+        "excerpt": "Exploring how to build scalable enterprise applications with Angular..."
+      },
+      "css-animation-performance": {
+        "title": "CSS Animation and Performance Optimization",
+        "excerpt": "Learn how to create smooth CSS animations and optimize animation performance..."
+      },
+      "frontend-engineering": {
+        "title": "Frontend Engineering Practices",
+        "excerpt": "From build tools to code standards, a comprehensive guide to frontend engineering best practices..."
+      },
+      "nodejs-backend-development": {
+        "title": "Node.js Backend Development Practical Guide",
+        "excerpt": "Learn Node.js from scratch and master core backend development skills and best practices..."
+      },
+      "javascript-async-programming": {
+        "title": "Deep Understanding of JavaScript Asynchronous Programming",
+        "excerpt": "Deep dive into Promise, async/await, and event loop to master asynchronous programming..."
+      },
+      "webpack-vite-comparison": {
+        "title": "Webpack vs Vite: Choosing and Thinking About Build Tools",
+        "excerpt": "Comparing Webpack and Vite, sharing experience in choosing tools for real projects..."
+      },
+      "frontend-career-growth": {
+        "title": "Frontend Developer's Growth Path: From Beginner to Advanced",
+        "excerpt": "Sharing my growth journey as a frontend developer, including learning paths, challenges encountered, and gains..."
+      },
+      "micro-frontends-architecture": {
+        "title": "Micro Frontends Architecture Practice: Splitting and Collaboration in Large Projects",
+        "excerpt": "Exploring micro frontends architecture design and sharing practical experience in real projects..."
+      }
+    }
+  },
+  "footprints": {
+    "title": "Footprints",
+    "subtitle": "Recording the paths I've walked, things I've done, and some moments",
+    "items": [
+      {
+        "tag": "Learning",
+        "title": "Taking my personal site from 0 to 1 and going live",
+        "desc": "From animations and routing to deployment, polishing the experience and building the content system."
+      },
+      {
+        "tag": "Growth",
+        "title": "Refactoring the frontend architecture of a legacy project",
+        "desc": "Clarifying boundaries between components, state, and APIs, with automation and a more reliable release flow."
+      },
+      {
+        "tag": "Life",
+        "title": "Inspiration from a trip",
+        "desc": "Seeing real-world colors and rhythms makes me want to build more \"warm\" interactions when I come back to code."
+      }
+    ]
+  },
+  "personal": {
+    "name": "Locke",
+    "nameEn": "Locke",
+    "nameWithNickname": "Locke",
+    "location": "China",
+    "title": "Frontend Engineer (Vue / React / Engineering)",
+    "description": "8 years of frontend development experience, focusing on Vue / React ecosystem and frontend engineering, specializing in complex architecture and performance optimization.",
+    "education": "Electronic Science and Technology",
+    "experience": "8+ years of frontend development experience",
+    "hobbies": "Programming, Design, Music, Travel",
+    "bio": "Hi, I'm Locke. Focused on Vue / React ecosystem and engineering infrastructure (build, CI/CD, standards, quality), specializing in complex frontend architecture design and performance optimization, like to use reusable abstractions to clarify complex problems and make them solid."
+  },
+  "skills": {
+    "Vue3": "Vue3",
+    "React": "React",
+    "TypeScript": "TypeScript",
+    "JavaScript": "JavaScript",
+    "前端工程化": "Frontend Engineering",
+    "性能优化": "Performance Optimization",
+    "Vite / Webpack": "Vite / Webpack",
+    "Node.js": "Node.js",
+    "架构设计": "Architecture Design",
+    "CSS / 动画": "CSS / Animation",
+    "HTML5": "HTML5",
+    "Git": "Git"
+  },
+  "tags": {
+    "响应式": "Reactivity",
+    "虚拟 DOM": "Virtual DOM",
+    "源码阅读": "Source Code Reading",
+    "编译器": "Compiler",
+    "组件库": "Component Library",
+    "鉴权": "Authentication",
+    "工程实践": "Engineering Practice",
+    "打包器": "Bundler"
+  },
+  "projects": {
+    "personal-website": {
+      "name": "personal-website",
+      "description": "Personal website: hosting projects/articles/contact information, continuously iterating."
+    },
+    "mini-vue3": {
+      "name": "mini-vue3",
+      "description": "Implement Vue3 core reactivity, computed, and virtual DOM renderer from scratch.",
+      "highlights": ["Reactivity System", "computed / effect", "Renderer and patch process"]
+    },
+    "mini-react": {
+      "name": "mini-react",
+      "description": "Implement a mini version of React Fiber / Hooks / Scheduler.",
+      "highlights": ["Fiber Scheduling", "Hooks Mechanism", "Basic reconciliation flow"]
+    },
+    "vue3-source-analysis": {
+      "name": "vue3-source-analysis",
+      "description": "Vue3 source code reading notes (Reactivity / Virtual DOM / Compiler / Component System).",
+      "highlights": ["Systematic knowledge organization", "Paired with mini-vue3", "Reusable for interviews/practice"]
+    },
+    "react-source-analysis": {
+      "name": "react-source-analysis",
+      "description": "React source code reading notes (Fiber Architecture / Reconciliation / Hooks / Scheduler).",
+      "highlights": ["From architecture to details", "Paired with mini-react", "Understanding React16+ core"]
+    },
+    "vue3-component-lib": {
+      "name": "vue3-component-lib",
+      "description": "Vue3 component library referencing Element Plus (with component overview/Playground).",
+      "highlights": ["Common component accumulation", "Interaction/usability refinement", "Extensible architecture"]
+    },
+    "react-component-lib": {
+      "name": "react-component-lib",
+      "description": "React component library referencing Ant Design (complete components with demos).",
+      "highlights": ["Component engineering", "Reusable component patterns", "Consistency and experience"]
+    },
+    "vue3-admin-template": {
+      "name": "vue3-admin-template",
+      "description": "Streamlined admin template with Vue3 + Router + Pinia + Axios (login authentication/role routing).",
+      "highlights": ["Login authentication", "Role-based routing control", "Basic layout"]
+    },
+    "react-admin-template": {
+      "name": "react-admin-template",
+      "description": "Admin template with React Router + Zustand + Axios, aligned with Vue version routing/permission model.",
+      "highlights": ["Routing/permission model", "Engineering foundation", "Extensible"]
+    },
+    "react-hooks-collection": {
+      "name": "react-hooks-collection",
+      "description": "Business-level Hooks collection (useRequest / useVirtualList / useWebSocket, etc.).",
+      "highlights": ["Reusable business abstractions", "Covering common scenarios", "Focus on boundaries and experience"]
+    },
+    "mini-webpack": {
+      "name": "mini-webpack",
+      "description": "Mini Webpack: dependency resolution + module bundling + runtime require.",
+      "highlights": ["Dependency graph", "Module system", "Understanding bundling process"]
+    },
+    "mini-bundler": {
+      "name": "mini-bundler",
+      "description": "Mini bundler implementing AST parsing, dependency graph, Loader / Plugin / Babel process.",
+      "highlights": ["AST parsing", "Dependency graph construction", "Plugin mechanism"]
+    }
+  },
+  "game": {
+    "tank": {
+      "title": "Tank Battle",
+      "help": "Move with WASD / Arrow keys, shoot with J or Space",
+      "startHint": "Press Space to start, move with WASD / Arrow keys, shoot with J or Space",
+      "restartHint": " Press Space to restart",
+      "score": "Score",
+      "lives": "Lives",
+      "level": "Level"
+    }
+  },
+  "footer": {
+    "quickLinks": "Quick Links",
+    "contactInfo": "Contact Information",
+    "shareToWeChat": "Share to WeChat",
+    "madeWith": "Made with ❤️ and Vue3",
+    "wechatShareTitle": "WeChat QR Code Share",
+    "wechatShareSubtitle": "Open WeChat scan, share this page to friends/moments",
+    "generatingQr": "Generating QR code...",
+    "qrGenerateFailed": "QR code generation failed",
+    "retry": "Retry"
+  },
+  "comments": {
+    "title": "Public Comments",
+    "subtitle": "Welcome to leave your thoughts (visible to everyone)",
+    "nicknameLabel": "Nickname (optional)",
+    "nicknamePlaceholder": "Anonymous / Your nickname",
+    "contentLabel": "Comment",
+    "contentPlaceholder": "Write something... (Be respectful, no ads/malicious content)",
+    "submit": "Post Comment",
+    "save": "Save Changes",
+    "submitting": "Posting...",
+    "cancelEdit": "Cancel Edit",
+    "latestComments": "Latest Comments",
+    "refresh": "Refresh",
+    "loading": "Loading...",
+    "empty": "No comments yet, be the first one～",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteConfirmTitle": "Delete this comment?",
+    "deleteConfirmText": "This action cannot be undone, and will only affect this comment you just posted.",
+    "keepIt": "Keep It",
+    "confirmDelete": "Confirm Delete",
+    "submitSuccess": "Posted successfully",
+    "editSuccess": "Updated successfully",
+    "deleteSuccess": "Deleted",
+    "submitFailed": "Failed to post",
+    "deleteFailed": "Failed to delete",
+    "loadFailed": "Failed to load",
+    "anonymous": "Anonymous",
+    "errors": {
+      "emptyResponse": "Empty response from API",
+      "invalidFormat": "Invalid response format",
+      "requestFailed": "Request failed"
+    }
+  },
+  "contactModal": {
+    "copy": "Copy",
+    "copied": "Copied"
+  },
+  "social": {
+    "wechat": "WeChat",
+    "qq": "QQ",
+    "github": "GitHub",
+    "site": "Site (Vercel)"
+  },
+  "projectCategories": {
+    "个人作品": "Personal Projects",
+    "源码实现": "Source Implementation",
+    "源码阅读": "Source Reading",
+    "组件库": "Component Library",
+    "Admin 模板": "Admin Template",
+    "Hooks / 工具": "Hooks / Tools",
+    "工程化 / 构建": "Engineering / Build"
+  },
+  "blogPosts": {
+    "content": {
+      "opensource-projects": "# Open Source Projects Navigation\n\nThis article organizes some representative repositories on my GitHub by \"learning path + engineering value\" to help you quickly find the direction you care about.\n\n> GitHub Profile: [@xianqiuyu](https://github.com/xianqiuyu)\n\n## 1) Source Implementation (Building from Scratch, Understanding Principles)\n\n* **mini-vue3**: Implement Vue3 core reactivity, computed, and virtual DOM renderer from scratch  \n  - Recommended for: Those who want to master Vue3 reactivity/renderer  \n  - Link: [mini-vue3](https://github.com/xianqiuyu/mini-vue3)\n* **mini-react**: Implement a mini version of React Fiber / Hooks / Scheduler  \n  - Recommended for: Those who want to understand React16+ core  \n  - Link: [mini-react](https://github.com/xianqiuyu/mini-react)\n\n## 2) Source Reading (Systematic Notes, Building Cognitive Maps)\n\n* **vue3-source-analysis**: Vue3 source code reading notes (Reactivity / Virtual DOM / Compiler / Component System)  \n  - Link: [vue3-source-analysis](https://github.com/xianqiuyu/vue3-source-analysis)\n* **react-source-analysis**: React source code reading notes (Fiber / Reconciliation / Hooks / Scheduler)  \n  - Link: [react-source-analysis](https://github.com/xianqiuyu/react-source-analysis)\n\n## 3) Component Library (Engineering and Design System Implementation)\n\n* **vue3-component-lib**: Vue3 component library referencing Element Plus (with overview/Playground)  \n  - Link: [vue3-component-lib](https://github.com/xianqiuyu/vue3-component-lib)\n* **react-component-lib**: React component library referencing Ant Design (each component with demo)  \n  - Link: [react-component-lib](https://github.com/xianqiuyu/react-component-lib)\n\n## 4) Admin Template (Routing/Permissions/Engineering Skeleton)\n\n* **vue3-admin-template**: Streamlined admin template with Vue3 + Router + Pinia + Axios (login authentication/role routing)  \n  - Link: [vue3-admin-template](https://github.com/xianqiuyu/vue3-admin-template)\n* **react-admin-template**: Admin template with React Router + Zustand + Axios (aligned with Vue version model)  \n  - Link: [react-admin-template](https://github.com/xianqiuyu/react-admin-template)\n\n## 5) Engineering / Build (Bundler Principles)\n\n* **mini-webpack**: Mini Webpack with dependency resolution + module bundling + runtime require  \n  - Link: [mini-webpack](https://github.com/xianqiuyu/mini-webpack)\n* **mini-bundler**: Mini bundler implementing AST + dependency graph + Loader/Plugin + Babel process  \n  - Link: [mini-bundler](https://github.com/xianqiuyu/mini-bundler)\n\n## 6) Hooks / Tools (Highly Reusable Business Abstractions)\n\n* **react-hooks-collection**: Business-level Hooks collection (useRequest / useVirtualList / useWebSocket, etc.)  \n  - Link: [react-hooks-collection](https://github.com/xianqiuyu/react-hooks-collection)\n\n## Afterword\n\nI will break down the \"design trade-offs, pitfalls, and reusable patterns\" behind each project into a series of articles, and welcome you to raise Issues on GitHub for discussion.",
+      "vue3-composition-api": "# Deep Dive into Vue3 Composition API\n\nVue3's Composition API is a major innovation in the Vue framework, providing us with a more flexible and powerful way to organize component logic. This article will explore the core concepts, use cases, and best practices of Composition API in depth.\n\n## What is Composition API?\n\nComposition API is a new set of APIs introduced in Vue3 that allows us to organize component logic in a functional way. Unlike the traditional Options API, Composition API organizes related logic together rather than scattering it across options (data, methods, computed, etc.).\n\n### Why Composition API?\n\nIn large projects, when using Options API, related logic may be scattered across different options:\n\n\\`\\`\\`javascript\nexport default {\n  data() {\n    return {\n      count: 0,\n      name: ''\n    }\n  },\n  methods: {\n    increment() {\n      this.count++\n    },\n    updateName() {\n      // Logic for handling name\n    }\n  },\n  computed: {\n    doubleCount() {\n      return this.count * 2\n    }\n  }\n}\n\\`\\`\\`\n\nWhen components become complex, this organization makes code difficult to maintain. Composition API solves this problem:\n\n\\`\\`\\`javascript\nimport { ref, computed } from 'vue'\n\nexport default {\n  setup() {\n    const count = ref(0)\n    const name = ref('')\n    \n    const increment = () => {\n      count.value++\n    }\n    \n    const doubleCount = computed(() => count.value * 2)\n    \n    return {\n      count,\n      name,\n      increment,\n      doubleCount\n    }\n  }\n}\n\\`\\`\\`\n\n## Core API Details\n\n### 1. ref and reactive\n\n\\`ref\\` is used to create reactive primitive values, \\`reactive\\` is used to create reactive objects:\n\n\\`\\`\\`javascript\nimport { ref, reactive } from 'vue'\n\n// ref for primitive types\nconst count = ref(0)\nconst message = ref('Hello')\n\n// reactive for objects\nconst state = reactive({\n  name: 'Vue3',\n  version: '3.0'\n})\n\n// Access ref values using .value\nconsole.log(count.value) // 0\ncount.value = 1\n\n// reactive objects can be accessed directly\nconsole.log(state.name) // 'Vue3'\nstate.name = 'Vue 3'\n\\`\\`\\`\n\n### 2. computed Properties\n\n\\`computed\\` is used to create computed properties that automatically update based on dependencies:\n\n\\`\\`\\`javascript\nimport { ref, computed } from 'vue'\n\nconst firstName = ref('John')\nconst lastName = ref('Doe')\n\nconst fullName = computed({\n  get: () => \\`\\${firstName.value} \\${lastName.value}\\`,\n  set: (newValue) => {\n    const names = newValue.split(' ')\n    firstName.value = names[0]\n    lastName.value = names[names.length - 1]\n  }\n})\n\\`\\`\\`\n\n### 3. watch and watchEffect\n\n\\`watch\\` is used to watch specific data sources, \\`watchEffect\\` automatically tracks dependencies:\n\n\\`\\`\\`javascript\nimport { ref, watch, watchEffect } from 'vue'\n\nconst count = ref(0)\nconst name = ref('')\n\n// watch specific data source\nwatch(count, (newVal, oldVal) => {\n  console.log(\\`count changed from \\${oldVal} to \\${newVal}\\`)\n})\n\n// watchEffect automatically tracks dependencies\nwatchEffect(() => {\n  console.log(\\`count is: \\${count.value}\\`)\n})\n\\`\\`\\`\n\n### 4. Lifecycle Hooks\n\nComposition API provides corresponding lifecycle hooks:\n\n\\`\\`\\`javascript\nimport { onMounted, onUpdated, onUnmounted } from 'vue'\n\nexport default {\n  setup() {\n    onMounted(() => {\n      console.log('Component mounted')\n    })\n    \n    onUpdated(() => {\n      console.log('Component updated')\n    })\n    \n    onUnmounted(() => {\n      console.log('Component unmounted')\n    })\n  }\n}\n\\`\\`\\`\n\n## Composable Functions\n\nComposable functions are one of the core advantages of Composition API, allowing us to extract and reuse logic:\n\n\\`\\`\\`javascript\n// useCounter.js\nimport { ref } from 'vue'\n\nexport function useCounter(initialValue = 0) {\n  const count = ref(initialValue)\n  \n  const increment = () => {\n    count.value++\n  }\n  \n  const decrement = () => {\n    count.value--\n  }\n  \n  const reset = () => {\n    count.value = initialValue\n  }\n  \n  return {\n    count,\n    increment,\n    decrement,\n    reset\n  }\n}\n\\`\\`\\`\n\nUsage in components:\n\n\\`\\`\\`javascript\nimport { useCounter } from './useCounter'\n\nexport default {\n  setup() {\n    const { count, increment, decrement, reset } = useCounter(10)\n    \n    return {\n      count,\n      increment,\n      decrement,\n      reset\n    }\n  }\n}\n\\`\\`\\`\n\n## Practical Application Scenarios\n\n### 1. Data Fetching\n\n\\`\\`\\`javascript\nimport { ref, onMounted } from 'vue'\n\nexport function useFetch(url) {\n  const data = ref(null)\n  const loading = ref(false)\n  const error = ref(null)\n  \n  const fetchData = async () => {\n    loading.value = true\n    try {\n      const response = await fetch(url)\n      data.value = await response.json()\n    } catch (e) {\n      error.value = e\n    } finally {\n      loading.value = false\n    }\n  }\n  \n  onMounted(() => {\n    fetchData()\n  })\n  \n  return {\n    data,\n    loading,\n    error,\n    fetchData\n  }\n}\n\\`\\`\\`\n\n### 2. Form Handling\n\n\\`\\`\\`javascript\nimport { ref } from 'vue'\n\nexport function useForm(initialValues) {\n  const formData = ref({ ...initialValues })\n  const errors = ref({})\n  \n  const validate = () => {\n    errors.value = {}\n    // Validation logic\n    return Object.keys(errors.value).length === 0\n  }\n  \n  const reset = () => {\n    formData.value = { ...initialValues }\n    errors.value = {}\n  }\n  \n  return {\n    formData,\n    errors,\n    validate,\n    reset\n  }\n}\n\\`\\`\\`\n\n## Best Practices\n\n1. **Extract logic with composable functions**: Extract reusable logic into composable functions\n2. **Use ref and reactive appropriately**: Use ref for primitives, reactive for objects\n3. **Beware of reactivity loss**: Destructuring reactive objects loses reactivity, use toRefs\n4. **Performance optimization**: Use shallowRef and shallowReactive for large objects\n5. **TypeScript support**: Make full use of TypeScript's type inference\n\n## Summary\n\nComposition API brings more powerful logic organization capabilities to Vue3, especially suitable for large projects. Through composable functions, we can better reuse code and improve development efficiency. Although the learning curve is relatively steep, once mastered, you'll find the benefits are enormous.\n\nI hope this article helps you better understand and use Composition API. If you have any questions, please feel free to discuss in the comments!"
+    }
+  }
+}

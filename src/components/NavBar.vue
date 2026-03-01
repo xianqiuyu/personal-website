@@ -7,41 +7,67 @@
       </router-link>
       <ul class="nav-menu" :class="{ active: menuOpen }">
         <li>
-          <router-link to="/" @click="closeMenu">首页</router-link>
+          <router-link to="/" @click="closeMenu">{{ $t('nav.home') }}</router-link>
         </li>
         <li>
-          <router-link to="/about" @click="closeMenu">关于我</router-link>
+          <router-link to="/about" @click="closeMenu">{{ $t('nav.about') }}</router-link>
         </li>
         <li>
-          <router-link to="/portfolio" @click="closeMenu">作品集</router-link>
+          <router-link to="/portfolio" @click="closeMenu">{{ $t('nav.portfolio') }}</router-link>
         </li>
         <li>
-          <router-link to="/blog" @click="closeMenu">博客</router-link>
+          <router-link to="/blog" @click="closeMenu">{{ $t('nav.blog') }}</router-link>
         </li>
         <li>
-          <router-link to="/footprints" @click="closeMenu">足迹</router-link>
+          <router-link to="/footprints" @click="closeMenu">{{ $t('nav.footprints') }}</router-link>
         </li>
         <li>
-          <router-link to="/contact" @click="closeMenu">联系</router-link>
+          <router-link to="/algorithms/hot100" @click="closeMenu">{{ $t('nav.algorithms') }}</router-link>
+        </li>
+        <li>
+          <router-link to="/contact" @click="closeMenu">{{ $t('nav.contact') }}</router-link>
         </li>
       </ul>
-      <button class="menu-toggle" @click="menuOpen = !menuOpen">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+      <div class="nav-actions">
+        <button class="lang-switch" @click="toggleLocale" :title="currentLocale === 'zh' ? $t('nav.switchToEnglish') : $t('nav.switchToChinese')">
+          {{ currentLocale === 'zh' ? 'EN' : $t('nav.chinese') }}
+        </button>
+        <button class="menu-toggle" @click="menuOpen = !menuOpen">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
     </div>
   </nav>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { personalInfo } from '@/config/personalInfo'
 
+const { t, locale } = useI18n()
 const isScrolled = ref(false)
 const menuOpen = ref(false)
 
-const logoText = `${personalInfo.nickname ? personalInfo.nickname + ' · ' : ''}${personalInfo.name}的个人网站`
+const currentLocale = computed(() => locale.value)
+
+const logoText = computed(() => {
+  if (currentLocale.value === 'zh') {
+    // 中文环境：显示 "Locke · 于贤秋的个人网站"
+    return `${personalInfo.nickname || ''} · ${personalInfo.name}的个人网站`
+  } else {
+    // 英文环境：只显示 "Locke's Personal Website"（避免重复显示名字）
+    return `${personalInfo.nickname || personalInfo.name}'s Personal Website`
+  }
+})
+
+const toggleLocale = () => {
+  const newLocale = currentLocale.value === 'zh' ? 'en' : 'zh'
+  locale.value = newLocale
+  localStorage.setItem('locale', newLocale)
+}
 
 const handleScroll = () => {
   isScrolled.value = window.scrollY > 50
@@ -148,6 +174,30 @@ onUnmounted(() => {
 .nav-menu a:hover::after,
 .nav-menu a.router-link-active::after {
   width: 100%;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.lang-switch {
+  background: rgba(255, 107, 157, 0.1);
+  border: 2px solid var(--primary);
+  color: var(--primary);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.lang-switch:hover {
+  background: var(--primary);
+  color: white;
+  transform: scale(1.05);
 }
 
 .menu-toggle {

@@ -3,50 +3,50 @@
     <div class="footer-content">
       <div class="footer-section">
         <h3>{{ displayName }}</h3>
-        <p>{{ personalInfo.title }}</p>
-        <p>{{ personalInfo.description }}</p>
+        <p>{{ $t('personal.title') }}</p>
+        <p>{{ $t('personal.description') }}</p>
       </div>
       <div class="footer-section">
-        <h4>快速链接</h4>
+        <h4>{{ $t('footer.quickLinks') }}</h4>
         <ul>
-          <li><router-link to="/">首页</router-link></li>
-          <li><router-link to="/about">关于我</router-link></li>
-          <li><router-link to="/portfolio">作品集</router-link></li>
-          <li><router-link to="/blog">博客</router-link></li>
-          <li><router-link to="/contact">联系</router-link></li>
+          <li><router-link to="/">{{ $t('nav.home') }}</router-link></li>
+          <li><router-link to="/about">{{ $t('nav.about') }}</router-link></li>
+          <li><router-link to="/portfolio">{{ $t('nav.portfolio') }}</router-link></li>
+          <li><router-link to="/blog">{{ $t('nav.blog') }}</router-link></li>
+          <li><router-link to="/contact">{{ $t('nav.contact') }}</router-link></li>
         </ul>
       </div>
       <div class="footer-section">
-        <h4>联系方式</h4>
+        <h4>{{ $t('footer.contactInfo') }}</h4>
         <p>📧 {{ personalInfo.email }}</p>
         <p>📱 {{ personalInfo.phone }}</p>
-        <p>📍 {{ personalInfo.location }}</p>
+        <p>📍 {{ $t('personal.location') }}</p>
         <button class="wechat-share-btn" type="button" @click="shareToWeChat">
           <span>💬</span>
-          <span>转发到微信</span>
+          <span>{{ $t('footer.shareToWeChat') }}</span>
         </button>
       </div>
     </div>
     <div class="footer-bottom">
-      <p>© {{ new Date().getFullYear() }} {{ personalInfo.name }}. Made with ❤️ and Vue3</p>
+      <p>© {{ new Date().getFullYear() }} {{ displayName }}. {{ $t('footer.madeWith') }}</p>
     </div>
 
     <!-- 微信分享弹窗（二维码） -->
     <div v-if="showWeChatShare" class="wechat-share-overlay" @click="closeWeChatShare">
       <div class="wechat-share-modal" @click.stop>
         <button class="wechat-close" @click="closeWeChatShare">×</button>
-        <h3 class="wechat-title">微信扫码转发</h3>
-        <p class="wechat-subtitle">打开微信扫一扫，把当前页面分享给好友/朋友圈</p>
+        <h3 class="wechat-title">{{ $t('footer.wechatShareTitle') }}</h3>
+        <p class="wechat-subtitle">{{ $t('footer.wechatShareSubtitle') }}</p>
 
         <div class="wechat-qr">
           <div v-if="isGeneratingQr" class="wechat-qr-loading">
             <div class="spinner"></div>
-            <span>生成二维码中...</span>
+            <span>{{ $t('footer.generatingQr') }}</span>
           </div>
-          <img v-else-if="qrDataUrl" :src="qrDataUrl" alt="微信分享二维码" />
+          <img v-else-if="qrDataUrl" :src="qrDataUrl" :alt="$t('blog.wechatQrAlt')" />
           <div v-else class="wechat-qr-error">
-            <p>二维码生成失败</p>
-            <button class="wechat-share-btn" type="button" @click="generateQrCode">重试</button>
+            <p>{{ $t('footer.qrGenerateFailed') }}</p>
+            <button class="wechat-share-btn" type="button" @click="generateQrCode">{{ $t('footer.retry') }}</button>
           </div>
         </div>
       </div>
@@ -55,14 +55,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import QRCode from 'qrcode'
 import { personalInfo } from '@/config/personalInfo'
+
+const { t, locale } = useI18n()
 
 const showWeChatShare = ref(false)
 const isGeneratingQr = ref(false)
 const qrDataUrl = ref<string>('')
-const displayName = personalInfo.nickname ? `${personalInfo.nickname}（${personalInfo.name}）` : personalInfo.name
+
+const displayName = computed(() => {
+  if (locale.value === 'zh') {
+    return personalInfo.nickname ? `${personalInfo.nickname}（${personalInfo.name}）` : personalInfo.name
+  } else {
+    return personalInfo.nickname || personalInfo.name
+  }
+})
 
 const closeWeChatShare = () => {
   showWeChatShare.value = false
@@ -93,8 +103,8 @@ const shareToWeChat = async () => {
   if (navigator.share) {
     try {
       await navigator.share({
-        title: document.title || '分享页面',
-        text: '分享一个页面给你～',
+        title: document.title || t('blog.shareArticle'),
+        text: t('blog.shareText'),
         url: window.location.href
       })
       return

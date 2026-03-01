@@ -1,7 +1,7 @@
 <template>
   <img
     :src="wechatIconUrl"
-    alt="微信"
+    :alt="$t('social.wechat')"
     class="wechat-icon"
     @error="handleImageError"
   />

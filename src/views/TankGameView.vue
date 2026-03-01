@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, reactive, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 type Direction = 'up' | 'down' | 'left' | 'right'
 
@@ -34,6 +35,8 @@ interface Wall {
   hp: number
 }
 
+const { t } = useI18n()
+
 const gameWidth = 800
 const gameHeight = 600
 
@@ -45,7 +48,7 @@ const state = reactive({
   score: 0,
   lives: 3,
   level: 1,
-  message: '按空格开始游戏，WASD 或 方向键控制坦克，J 或 空格射击',
+  message: t('game.tank.startHint'),
 })
 
 const keys = reactive(new Set<string>())
@@ -113,7 +116,7 @@ function startGame() {
 function stopGame(msg: string) {
   running.value = false
   cancelAnimationFrame(animationId)
-  state.message = msg + ' 按空格重新开始'
+  state.message = msg + t('game.tank.restartHint')
 }
 
 function spawnBullet(owner: 'player' | 'enemy', x: number, y: number, dir: Direction) {
@@ -405,9 +408,9 @@ function draw() {
   // HUD
   c.fillStyle = '#ffffff'
   c.font = '16px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
-  c.fillText(`得分: ${state.score}`, 16, 24)
-  c.fillText(`生命: ${state.lives}`, 16, 48)
-  c.fillText(`关卡: ${state.level}`, 16, 72)
+  c.fillText(`${t('game.tank.score')}: ${state.score}`, 16, 24)
+  c.fillText(`${t('game.tank.lives')}: ${state.lives}`, 16, 48)
+  c.fillText(`${t('game.tank.level')}: ${state.level}`, 16, 72)
 
   if (!running.value && state.message) {
     c.fillStyle = 'rgba(0,0,0,0.5)'
@@ -466,8 +469,8 @@ onUnmounted(() => {
 <template>
   <div class="tank-page">
     <div class="top-bar">
-      <h2>坦克大战</h2>
-      <p>WASD / 方向键移动，J 或 空格射击</p>
+      <h2>{{ $t('game.tank.title') }}</h2>
+      <p>{{ $t('game.tank.help') }}</p>
     </div>
     <div class="game-wrapper">
       <canvas ref="canvasRef" class="game-canvas"></canvas>

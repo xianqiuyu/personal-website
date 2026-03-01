@@ -219,10 +219,32 @@ function attachHandler() {
 }
 ```
 
-**扩展追问：**
-- 闭包是如何在内存中存储的？
-- 如何识别和避免闭包导致的内存泄漏？
-- 闭包和普通函数调用的性能差异？
+**扩展追问（含简要解答）：**
+
+**Q: 闭包是如何在内存中存储的？**
+> 1. **作用域链保存**：闭包函数创建时，会捕获外部作用域的变量引用，形成 `[[Scope]]` 内部属性
+> 2. **堆内存存储**：被引用的外部变量存储在堆内存中，不会随外部函数执行完毕而销毁
+> 3. **词法环境**：每个函数都有一个词法环境（Lexical Environment），闭包会保持对外部词法环境的引用
+> 4. **生命周期**：只要闭包函数还被引用，其捕获的变量就不会被垃圾回收
+
+**Q: 如何识别和避免闭包导致的内存泄漏？**
+> **识别方法**：
+> - Chrome DevTools → Memory → Heap Snapshot
+> - 查找 Detached DOM 节点和未释放的闭包引用
+> - Timeline 观察内存是否持续增长
+>
+> **避免方法**：
+> 1. 及时解除引用：`handler = null`
+> 2. 不捕获不需要的大对象
+> 3. 组件卸载时清理事件监听、定时器
+> 4. 使用 WeakMap/WeakSet 存储对象引用（可被GC回收）
+
+**Q: 闭包和普通函数调用的性能差异？**
+> 1. **内存占用**：闭包会保持外部变量引用，内存占用更高
+> 2. **创建开销**：每次创建闭包都会生成新的作用域链，略有开销
+> 3. **访问速度**：访问闭包变量需要沿作用域链查找，比访问局部变量稍慢
+> 4. **实际影响**：现代 JS 引擎优化良好，差异通常可忽略
+> 5. **建议**：不必为性能而避免闭包，但要注意内存管理
 
 ---
 
@@ -362,10 +384,46 @@ console.log('script end')
 // await后面的代码相当于Promise.then，是微任务
 ```
 
-**扩展追问：**
-- Node.js的事件循环和浏览器有什么区别？
-- 如何理解async/await在事件循环中的执行？
-- 如何避免事件循环阻塞？
+**扩展追问（含简要解答）：**
+
+**Q: Node.js的事件循环和浏览器有什么区别？**
+> | 对比项 | 浏览器 | Node.js |
+> |-------|--------|---------|
+> | 阶段划分 | 宏任务 → 微任务 | 6个阶段：timers → pending → idle → poll → check → close |
+> | 微任务时机 | 每个宏任务后清空 | 每个阶段切换时清空 |
+> | `process.nextTick` | 无 | 优先级最高的微任务 |
+> | `setImmediate` | 无 | check 阶段执行 |
+> | I/O 处理 | 较简单 | poll 阶段专门处理 |
+
+**Q: 如何理解async/await在事件循环中的执行？**
+> 1. **async 函数**：返回一个 Promise
+> 2. **await 之前**：同步执行
+> 3. **await 表达式**：暂停函数执行，让出线程
+> 4. **await 之后**：相当于 `.then()` 回调，作为微任务执行
+> ```javascript
+> async function foo() {
+>   console.log(1)      // 同步
+>   await bar()         // 暂停，bar() 同步执行
+>   console.log(2)      // 微任务
+> }
+> // 等价于：foo().then(() => console.log(2))
+> ```
+
+**Q: 如何避免事件循环阻塞？**
+> 1. **拆分长任务**：使用 `setTimeout(fn, 0)` 或 `requestIdleCallback`
+> 2. **Web Worker**：将 CPU 密集型任务移到 Worker 线程
+> 3. **时间分片**：将大循环拆成多个小批次
+>    ```javascript
+>    function processChunk(items, index = 0) {
+>      const chunk = items.slice(index, index + 100)
+>      chunk.forEach(process)
+>      if (index + 100 < items.length) {
+>        setTimeout(() => processChunk(items, index + 100), 0)
+>      }
+>    }
+>    ```
+> 4. **避免同步 I/O**：使用异步 API
+> 5. **React 18 并发特性**：`useTransition` 标记非紧急更新
 
 ---
 
@@ -583,10 +641,62 @@ function asyncToGenerator(generatorFunc) {
 }
 ```
 
-**扩展追问：**
-- Promise.all和Promise.allSettled的区别？
-- 如何实现Promise的链式调用？
-- async/await的错误处理？
+**扩展追问（含简要解答）：**
+
+**Q: Promise.all和Promise.allSettled的区别？**
+> | 方法 | 行为 | 返回值 | 适用场景 |
+> |-----|------|--------|---------|
+> | `Promise.all` | 任一失败立即 reject | 成功数组 / 第一个错误 | 所有请求都必须成功 |
+> | `Promise.allSettled` | 等待全部完成 | `[{status, value/reason}]` | 需要知道每个结果 |
+> | `Promise.race` | 第一个完成（成功或失败） | 第一个结果 | 超时控制 |
+> | `Promise.any` | 第一个成功 | 第一个成功值 / AggregateError | 取最快成功的 |
+
+**Q: 如何实现Promise的链式调用？**
+> 核心：`.then()` 返回一个新的 Promise
+> ```javascript
+> then(onFulfilled, onRejected) {
+>   return new Promise((resolve, reject) => {
+>     // 1. 执行回调
+>     const result = onFulfilled(this.value)
+>     // 2. 如果返回的是 Promise，等待它完成
+>     if (result instanceof Promise) {
+>       result.then(resolve, reject)
+>     } else {
+>       // 3. 否则直接 resolve
+>       resolve(result)
+>     }
+>   })
+> }
+> ```
+> 关键点：每个 `.then()` 返回新 Promise，形成链条
+
+**Q: async/await的错误处理？**
+> 1. **try/catch**（推荐）：
+>    ```javascript
+>    async function fetchData() {
+>      try {
+>        const data = await fetch(url)
+>        return data.json()
+>      } catch (error) {
+>        console.error('请求失败:', error)
+>      }
+>    }
+>    ```
+> 2. **await 后 .catch()**：
+>    ```javascript
+>    const data = await fetch(url).catch(err => null)
+>    ```
+> 3. **统一错误处理**：
+>    ```javascript
+>    async function wrapper(promise) {
+>      try {
+>        return [await promise, null]
+>      } catch (err) {
+>        return [null, err]
+>      }
+>    }
+>    const [data, error] = await wrapper(fetch(url))
+>    ```
 
 ---
 
@@ -757,10 +867,43 @@ Function.prototype.myBind = function(context, ...args1) {
 }
 ```
 
-**扩展追问：**
-- 箭头函数为什么不能改变this？
-- bind和call/apply的区别？
-- 如何理解this的绑定规则？
+**扩展追问（含简要解答）：**
+
+**Q: 箭头函数为什么不能改变this？**
+> 1. **没有自己的 this**：箭头函数不绑定 this，继承定义时外层作用域的 this
+> 2. **词法作用域**：this 在定义时就确定，而非调用时
+> 3. **call/apply/bind 无效**：因为箭头函数没有 `[[ThisValue]]` 内部槽
+> 4. **不能作为构造函数**：没有 `[[Construct]]` 方法，不能 new
+> ```javascript
+> const obj = {
+>   name: 'obj',
+>   arrow: () => console.log(this.name), // undefined（继承全局）
+>   normal() { console.log(this.name) }  // 'obj'
+> }
+> ```
+
+**Q: bind和call/apply的区别？**
+> | 方法 | 执行时机 | 参数形式 | 返回值 |
+> |-----|---------|---------|--------|
+> | `call` | 立即执行 | 逐个传参 `fn.call(ctx, a, b)` | 函数返回值 |
+> | `apply` | 立即执行 | 数组传参 `fn.apply(ctx, [a, b])` | 函数返回值 |
+> | `bind` | 返回新函数 | 逐个传参，支持柯里化 | 绑定后的新函数 |
+>
+> **使用场景**：
+> - `call/apply`：借用方法、立即调用
+> - `bind`：事件回调、延迟调用
+
+**Q: 如何理解this的绑定规则？**
+> **优先级从高到低**：
+> 1. **new 绑定**：`new Foo()` → this 指向新对象
+> 2. **显式绑定**：`call/apply/bind` → this 指向指定对象
+> 3. **隐式绑定**：`obj.foo()` → this 指向 obj
+> 4. **默认绑定**：`foo()` → this 指向 window（严格模式 undefined）
+>
+> **特殊情况**：
+> - 箭头函数：继承外层 this
+> - DOM 事件：this 指向触发元素
+> - setTimeout 回调：默认指向 window
 
 ---
 
@@ -953,10 +1096,43 @@ function _super(subClass, instance) {
 }
 ```
 
-**扩展追问：**
-- 原型链的查找机制？
-- 如何实现多重继承？
-- ES6 Class和ES5继承的区别？
+**扩展追问（含简要解答）：**
+
+**Q: 原型链的查找机制？**
+> 1. **查找顺序**：对象自身 → `__proto__` → 原型的 `__proto__` → ... → `Object.prototype` → `null`
+> 2. **属性遮蔽**：自身属性会遮蔽原型链上的同名属性
+> 3. **hasOwnProperty**：只检查自身属性，不查原型链
+> 4. **in 操作符**：检查自身 + 原型链
+> ```javascript
+> const obj = { a: 1 }
+> obj.hasOwnProperty('a')      // true
+> obj.hasOwnProperty('toString') // false
+> 'toString' in obj             // true（来自 Object.prototype）
+> ```
+
+**Q: 如何实现多重继承？**
+> JavaScript 不支持多重继承，但可以通过以下方式模拟：
+> 1. **Mixin 模式**：
+>    ```javascript
+>    const canFly = { fly() { console.log('flying') } }
+>    const canSwim = { swim() { console.log('swimming') } }
+>    
+>    class Duck {}
+>    Object.assign(Duck.prototype, canFly, canSwim)
+>    ```
+> 2. **组合继承**：将多个类的方法复制到目标类
+> 3. **装饰器模式**：用函数包装增强类
+> 4. **注意**：Mixin 会有方法冲突和 this 绑定问题
+
+**Q: ES6 Class和ES5继承的区别？**
+> | 对比项 | ES5 | ES6 Class |
+> |-------|-----|-----------|
+> | 语法 | 函数 + prototype | class + extends |
+> | 调用方式 | 可以普通调用 | 必须 new 调用 |
+> | 继承机制 | 先创建子类实例，再调用父构造函数 | 先创建父类实例（super），再修改 this |
+> | 静态方法继承 | 需手动 `Child.__proto__ = Parent` | 自动继承 |
+> | 内置类型继承 | 不能正确继承 Array 等 | 可以继承 |
+> | 变量提升 | 函数声明会提升 | class 不会提升 |
 
 ---
 
@@ -1177,10 +1353,64 @@ curriedAdd(1, 2)(3) // 6
 curriedAdd(1)(2, 3) // 6
 ```
 
-**扩展追问：**
-- 防抖和节流的区别和使用场景？
-- 深拷贝如何处理函数、Date、RegExp等特殊对象？
-- 如何实现一个通用的工具函数库？
+**扩展追问（含简要解答）：**
+
+**Q: 防抖和节流的区别和使用场景？**
+> | 对比项 | 防抖（Debounce） | 节流（Throttle） |
+> |-------|-----------------|-----------------|
+> | 原理 | 延迟执行，重复触发会重置计时 | 固定间隔执行，忽略中间触发 |
+> | 执行次数 | 只执行最后一次 | 按频率执行多次 |
+> | 场景 | 搜索框输入、窗口 resize 后处理 | 滚动事件、鼠标移动、按钮防重复点击 |
+> | 比喻 | 电梯关门（有人进来就重新等） | 地铁发车（固定间隔发一班） |
+>
+> ```javascript
+> // 搜索框：用户停止输入 300ms 后才搜索
+> input.addEventListener('input', debounce(search, 300))
+> // 滚动：每 100ms 检测一次位置
+> window.addEventListener('scroll', throttle(checkPosition, 100))
+> ```
+
+**Q: 深拷贝如何处理函数、Date、RegExp等特殊对象？**
+> ```javascript
+> function deepClone(obj, map = new WeakMap()) {
+>   if (obj === null || typeof obj !== 'object') return obj
+>   if (map.has(obj)) return map.get(obj) // 循环引用
+>   
+>   // 特殊对象处理
+>   if (obj instanceof Date) return new Date(obj.getTime())
+>   if (obj instanceof RegExp) return new RegExp(obj.source, obj.flags)
+>   if (obj instanceof Map) {
+>     const clone = new Map()
+>     map.set(obj, clone)
+>     obj.forEach((v, k) => clone.set(deepClone(k, map), deepClone(v, map)))
+>     return clone
+>   }
+>   if (obj instanceof Set) {
+>     const clone = new Set()
+>     map.set(obj, clone)
+>     obj.forEach(v => clone.add(deepClone(v, map)))
+>     return clone
+>   }
+>   // 函数：通常直接引用（或用 new Function）
+>   if (typeof obj === 'function') return obj
+>   
+>   // 普通对象/数组
+>   const clone = Array.isArray(obj) ? [] : {}
+>   map.set(obj, clone)
+>   for (const key of Reflect.ownKeys(obj)) {
+>     clone[key] = deepClone(obj[key], map)
+>   }
+>   return clone
+> }
+> ```
+
+**Q: 如何实现一个通用的工具函数库？**
+> 1. **模块化设计**：按功能分模块（array、object、string、function）
+> 2. **TypeScript 类型**：提供完整的类型定义
+> 3. **Tree-shaking 友好**：使用 ESM 导出
+> 4. **单元测试**：每个函数都有测试用例
+> 5. **文档**：JSDoc 注释 + 使用示例
+> 6. **参考**：lodash-es、radash 的设计
 
 ---
 
@@ -1268,10 +1498,50 @@ console.log(b) // 错误：Cannot access 'b' before initialization
 let b = 2
 ```
 
-**扩展追问：**
-- 作用域链的查找机制？
-- 如何理解闭包和作用域的关系？
-- var、let、const的实际应用场景？
+**扩展追问（含简要解答）：**
+
+**Q: 作用域链的查找机制？**
+> 1. **词法作用域**：作用域在代码书写时就确定，与调用位置无关
+> 2. **查找顺序**：当前作用域 → 父作用域 → ... → 全局作用域
+> 3. **查找终止**：找到变量立即停止，找不到则报 ReferenceError
+> 4. **遮蔽效应**：内层同名变量会遮蔽外层变量
+> ```javascript
+> const a = 1
+> function outer() {
+>   const b = 2
+>   function inner() {
+>     const c = 3
+>     console.log(a, b, c) // 沿作用域链查找
+>   }
+> }
+> ```
+
+**Q: 如何理解闭包和作用域的关系？**
+> 1. **闭包 = 函数 + 词法作用域**：闭包是函数和其词法环境的组合
+> 2. **作用域链的延续**：闭包保持对外部作用域的引用，使变量不被销毁
+> 3. **本质**：闭包让函数能够"记住"定义时的作用域
+> ```javascript
+> function createCounter() {
+>   let count = 0 // 在 createCounter 的作用域中
+>   return function() {
+>     return ++count // 闭包保持对 count 的引用
+>   }
+> }
+> const counter = createCounter()
+> counter() // 1 - count 没有被销毁
+> counter() // 2
+> ```
+
+**Q: var、let、const的实际应用场景？**
+> | 场景 | 推荐 | 原因 |
+> |-----|-----|------|
+> | 常量 | `const` | 不可重新赋值，意图清晰 |
+> | 循环计数器 | `let` | 每次迭代创建新的绑定 |
+> | 需要重新赋值的变量 | `let` | 块级作用域，更安全 |
+> | 对象/数组（修改属性） | `const` | 引用不变，属性可变 |
+> | 全局变量 | 避免使用 | 污染全局作用域 |
+>
+> **现代最佳实践**：默认用 `const`，需要重新赋值时用 `let`，避免 `var`
 
 ---
 
@@ -1364,10 +1634,52 @@ const arr = [1, [2, [3, [4]]]]
 console.log(arr.myFlat(2)) // [1, 2, 3, [4]]
 ```
 
-**扩展追问：**
-- map、filter、reduce的性能对比？
-- 如何实现数组去重？
-- 数组方法的时间复杂度？
+**扩展追问（含简要解答）：**
+
+**Q: map、filter、reduce的性能对比？**
+> | 方法 | 时间复杂度 | 返回值 | 特点 |
+> |-----|-----------|--------|------|
+> | `map` | O(n) | 新数组（等长） | 每个元素都会处理 |
+> | `filter` | O(n) | 新数组（≤原长） | 只保留符合条件的 |
+> | `reduce` | O(n) | 任意值 | 最灵活，可实现 map/filter |
+> | `forEach` | O(n) | undefined | 无返回值，不能链式 |
+>
+> **性能建议**：
+> - 链式调用 `arr.map().filter()` 会遍历两次，可用 `reduce` 合并
+> - 大数据量考虑用 for 循环或 `for...of`
+
+**Q: 如何实现数组去重？**
+> ```javascript
+> // 1. Set（最简洁，推荐）
+> const unique = [...new Set(arr)]
+>
+> // 2. filter + indexOf
+> const unique = arr.filter((item, index) => arr.indexOf(item) === index)
+>
+> // 3. reduce
+> const unique = arr.reduce((acc, cur) => 
+>   acc.includes(cur) ? acc : [...acc, cur], [])
+>
+> // 4. 对象去重（适合对象数组）
+> const uniqueById = arr.filter((item, index, self) =>
+>   index === self.findIndex(t => t.id === item.id))
+>
+> // 5. Map（保持顺序，适合对象）
+> const map = new Map(arr.map(item => [item.id, item]))
+> const unique = [...map.values()]
+> ```
+
+**Q: 数组方法的时间复杂度？**
+> | 方法 | 时间复杂度 | 说明 |
+> |-----|-----------|------|
+> | `push/pop` | O(1) | 尾部操作 |
+> | `shift/unshift` | O(n) | 头部操作，需要移动元素 |
+> | `splice` | O(n) | 中间插入/删除 |
+> | `indexOf/includes` | O(n) | 线性查找 |
+> | `find/findIndex` | O(n) | 线性查找 |
+> | `map/filter/reduce` | O(n) | 遍历一次 |
+> | `sort` | O(n log n) | 通常是快排或 TimSort |
+> | `slice` | O(n) | 复制部分数组 |
 
 ---
 
@@ -1442,9 +1754,44 @@ class ButtonFactory {
 }
 ```
 
-**扩展追问：**
-- 前端开发中常用的设计模式有哪些？
-- 如何在前端项目中应用设计模式？
+**扩展追问（含简要解答）：**
+
+**Q: 前端开发中常用的设计模式有哪些？**
+> 1. **单例模式**：全局状态管理（Vuex Store、Redux Store）、API 实例
+> 2. **观察者模式**：Vue 响应式、EventEmitter、Redux subscribe
+> 3. **发布订阅模式**：EventBus、Node.js events、DOM 事件
+> 4. **工厂模式**：React.createElement、组件动态创建
+> 5. **策略模式**：表单验证规则、不同支付方式处理
+> 6. **装饰器模式**：React HOC、类装饰器 @decorator
+> 7. **代理模式**：Vue 3 Proxy、axios 拦截器
+> 8. **适配器模式**：统一不同 API 的数据格式
+> 9. **组合模式**：React 组件树、Vue 组件嵌套
+
+**Q: 如何在前端项目中应用设计模式？**
+> 1. **单例模式 - API 服务**：
+>    ```javascript
+>    export const api = new ApiService() // 模块导出即单例
+>    ```
+> 2. **观察者模式 - 状态订阅**：
+>    ```javascript
+>    store.subscribe((state) => console.log(state))
+>    ```
+> 3. **策略模式 - 表单验证**：
+>    ```javascript
+>    const validators = {
+>      required: (v) => !!v || '必填',
+>      email: (v) => /^.+@.+$/.test(v) || '邮箱格式错误'
+>    }
+>    const validate = (rules, value) => rules.map(r => validators[r](value))
+>    ```
+> 4. **装饰器模式 - 权限控制**：
+>    ```javascript
+>    const withAuth = (Component) => (props) => {
+>      if (!isLogin) return <Redirect to="/login" />
+>      return <Component {...props} />
+>    }
+>    ```
+> 5. **原则**：不要为了用模式而用，解决实际问题时自然会用到
 
 ---
 

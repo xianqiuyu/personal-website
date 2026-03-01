@@ -1,0 +1,452 @@
+{
+  "nav": {
+    "home": "首页",
+    "about": "关于我",
+    "portfolio": "作品集",
+    "blog": "博客",
+    "footprints": "足迹",
+    "algorithms": "算法 Hot100",
+    "contact": "联系",
+    "chinese": "中",
+    "switchToEnglish": "切换到英文",
+    "switchToChinese": "切换到中文"
+  },
+  "home": {
+    "greeting": "你好，我是",
+    "contactMe": "联系我",
+    "viewPortfolio": "查看作品",
+    "learnMore": "了解更多",
+    "aboutMe": "关于我",
+    "skills": "技能",
+    "skillsTree": "技能树",
+    "projects": "项目",
+    "contact": "联系",
+    "contactMeTitle": "联系我",
+    "education": "教育背景",
+    "experience": "工作经验",
+    "hobbies": "兴趣爱好",
+    "defaultName": "你的名字",
+    "defaultTitle": "前端工程师",
+    "defaultDescription": "热爱创造酷炫的交互体验，用代码让世界更美好 ✨",
+    "defaultEducation": "计算机科学专业",
+    "defaultExperience": "3年+ 前端开发经验",
+    "defaultHobbies": "编程、设计、音乐、旅行",
+    "defaultBio": "我是一名充满热情的前端工程师，专注于创造美观且功能强大的用户界面。我喜欢学习新技术，探索创新的解决方案，并将想法转化为现实。"
+  },
+  "algorithms": {
+    "hot100": "LeetCode Hot 100",
+    "subtitle": "精选 100 道高频算法题，助力算法面试",
+    "backToHot100": "返回 Hot 100",
+    "startDemo": "开始演示",
+    "demoing": "演示中...",
+    "reset": "重置",
+    "nextStep": "下一步",
+    "speed": "速度",
+    "animationDemo": "算法动画演示",
+    "codeImplementation": "代码实现",
+    "solutionCode": "解法代码",
+    "detailedExplanation": "详细解释",
+    "complexityAnalysis": "复杂度分析",
+    "timeComplexity": "时间复杂度",
+    "spaceComplexity": "空间复杂度",
+    "executionSteps": "执行步骤",
+    "listA": "链表 A",
+    "listB": "链表 B",
+    "complexityDesc1": "m 和 n 分别是两个链表的长度，最多遍历 m + n 个节点",
+    "complexityDesc2": "只使用了两个指针变量，空间复杂度为常数",
+    "complexityDesc3": "n 是二叉树的节点数，最坏情况下需要遍历所有节点",
+    "complexityDesc4": "h 是二叉树的高度，递归调用栈的深度为树的高度"
+  },
+  "intersection": {
+    "title": "相交链表",
+    "description": "给你两个单链表的头节点 headA 和 headB，请你找出并返回两个单链表相交的起始节点。如果两个链表没有交点，返回 null。",
+    "difficulty": {
+      "easy": "简单",
+      "medium": "中等",
+      "hard": "困难"
+    },
+    "tags": {
+      "linkedList": "链表",
+      "twoPointers": "双指针",
+      "hashTable": "哈希表"
+    },
+    "pointerA": "指针 A",
+    "pointerB": "指针 B",
+    "intersectionNode": "相交节点",
+    "notStarted": "未开始",
+    "node": "节点",
+    "value": "值",
+    "steps": {
+      "init": "初始化：指针 A 指向链表 A 头部（值为 {valA}），指针 B 指向链表 B 头部（值为 {valB}）",
+      "switchA": "指针 A 到达链表 A 末尾，切换到链表 B 头部（值为 {val}）",
+      "switchB": "指针 B 到达链表 B 末尾，切换到链表 A 头部（值为 {val}）",
+      "move": "指针 A={valA}（{posA}），B={valB}（{posB}），同时移动一步",
+      "found": "🎯 找到相交节点！值为 {val}，位于链表 A[{indexA}] 和链表 B[{indexB}]",
+      "notFound": "两个链表没有相交节点（两个指针都变为 null）"
+    },
+    "position": {
+      "inA": "A中",
+      "inB": "B中"
+    }
+  },
+  "lca": {
+    "title": "二叉树的最近公共祖先",
+    "description": "给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。最近公共祖先的定义为：对于有根树 T 的两个节点 p、q，最近公共祖先表示为一个节点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。",
+    "targetP": "目标节点 P",
+    "targetQ": "目标节点 Q",
+    "lca": "最近公共祖先",
+    "notSet": "未设置",
+    "tags": {
+      "binaryTree": "二叉树",
+      "dfs": "深度优先搜索",
+      "recursion": "递归"
+    },
+    "steps": {
+      "start": "开始查找节点 {p} 和 {q} 的最近公共祖先",
+      "visit": "访问节点 {val}",
+      "null": "节点为 null，返回 null",
+      "isTarget": "节点 {val} 是目标节点之一，返回该节点",
+      "searchLeft": "递归查找左子树",
+      "searchRight": "递归查找右子树",
+      "foundLCA": "节点 {val} 的左右子树都包含目标节点，{val} 是最近公共祖先！",
+      "returnLeft": "左子树找到目标节点，向上返回节点 {val}",
+      "returnRight": "右子树找到目标节点，向上返回节点 {val}",
+      "notFound": "节点 {val} 的子树中未找到目标节点，返回 null",
+      "result": "🎯 找到最近公共祖先：节点 {val}"
+    }
+  },
+  "common": {
+    "loading": "加载中...",
+    "error": "错误",
+    "success": "成功",
+    "confirm": "确认",
+    "cancel": "取消",
+    "retry": "重试",
+    "fillAllFields": "请填写所有必填字段",
+    "openingEmailClient": "正在打开邮件客户端..."
+  },
+  "about": {
+    "title": "关于我",
+    "subtitle": "了解更多关于我的信息",
+    "mySkills": "我的技能",
+    "education": "教育背景",
+    "experience": "工作经验",
+    "location": "所在地",
+    "hobbies": "兴趣爱好"
+  },
+  "contact": {
+    "title": "联系我",
+    "subtitle": "让我们一起创造美好的事物",
+    "contactInfo": "联系方式",
+    "email": "邮箱",
+    "phone": "电话",
+    "address": "地址",
+    "socialMedia": "社交媒体",
+    "sendMessage": "发送消息",
+    "name": "姓名",
+    "namePlaceholder": "请输入您的姓名",
+    "emailPlaceholder": "请输入您的邮箱",
+    "subject": "主题",
+    "subjectPlaceholder": "请输入消息主题",
+    "message": "消息",
+    "messagePlaceholder": "请输入您的消息...",
+    "sending": "发送中...",
+    "sendSuccess": "消息发送成功！我会尽快回复您。",
+    "sendFailed": "发送失败，请稍后重试或直接发送邮件到",
+    "nameLabel": "姓名:",
+    "emailLabel": "邮箱:"
+  },
+  "portfolio": {
+    "title": "我的作品集",
+    "subtitle": "开源项目与工程实践精选",
+    "hint": "点击卡片按钮即可跳转到 GitHub / Demo",
+    "all": "全部",
+    "github": "GitHub",
+    "demo": "Demo",
+    "categories": {
+      "个人作品": "个人作品",
+      "源码实现": "源码实现",
+      "源码阅读": "源码阅读",
+      "组件库": "组件库",
+      "Admin 模板": "Admin 模板",
+      "Hooks / 工具": "Hooks / 工具",
+      "工程化 / 构建": "工程化 / 构建"
+    }
+  },
+  "blog": {
+    "title": "我的博客",
+    "subtitle": "分享技术心得与生活感悟",
+    "readMore": "阅读更多",
+    "backToList": "返回博客列表",
+    "shareArticle": "分享这篇文章",
+    "shareToWeChat": "转发到微信",
+    "copyLink": "复制链接",
+    "linkCopied": "链接已复制到剪贴板！",
+    "articleNotFound": "文章未找到",
+    "wechatShareTitle": "微信扫码转发",
+    "wechatShareSubtitle": "打开微信扫一扫，把当前页面分享给好友/朋友圈",
+    "generatingQr": "生成二维码中...",
+    "wechatQrAlt": "微信分享二维码",
+    "qrGenerateFailed": "二维码生成失败",
+    "shareText": "我在个人网站看到一篇不错的文章，分享给你～",
+    "readTime": "{time}",
+    "categories": {
+      "开源": "开源",
+      "前端开发": "前端开发",
+      "编程语言": "编程语言",
+      "工程化": "工程化",
+      "后端开发": "后端开发",
+      "架构设计": "架构设计",
+      "生活感悟": "生活感悟"
+    },
+    "posts": {
+      "opensource-projects": {
+        "title": "开源项目导航：我做过哪些「从零实现/源码分析/工程化」",
+        "excerpt": "把 GitHub 上的核心项目按类型梳理一遍：从 mini-vue3 / mini-react 到组件库、后台模板与打包器。"
+      },
+      "vue3-composition-api": {
+        "title": "Vue3 Composition API 深度解析",
+        "excerpt": "深入探讨 Vue3 的 Composition API，了解其设计理念和最佳实践..."
+      },
+      "typescript-advanced-types": {
+        "title": "TypeScript 类型系统进阶",
+        "excerpt": "掌握 TypeScript 的高级类型特性，提升代码质量和开发效率..."
+      },
+      "react-hooks-practice": {
+        "title": "React Hooks 实战技巧",
+        "excerpt": "分享 React Hooks 在实际项目中的应用经验和常见问题解决方案..."
+      },
+      "angular-enterprise-architecture": {
+        "title": "Angular 企业级应用架构",
+        "excerpt": "探讨如何使用 Angular 构建可扩展的企业级应用程序..."
+      },
+      "css-animation-performance": {
+        "title": "CSS 动画与性能优化",
+        "excerpt": "学习如何创建流畅的 CSS 动画，并优化动画性能..."
+      },
+      "frontend-engineering": {
+        "title": "前端工程化实践",
+        "excerpt": "从构建工具到代码规范，全面了解前端工程化的最佳实践..."
+      },
+      "nodejs-backend-development": {
+        "title": "Node.js 后端开发实战指南",
+        "excerpt": "从零开始学习 Node.js，掌握后端开发的核心技能和最佳实践..."
+      },
+      "javascript-async-programming": {
+        "title": "JavaScript 异步编程深度理解",
+        "excerpt": "深入理解 Promise、async/await 和事件循环，掌握异步编程的精髓..."
+      },
+      "webpack-vite-comparison": {
+        "title": "Webpack vs Vite：构建工具的选择与思考",
+        "excerpt": "对比 Webpack 和 Vite 的优劣，分享在实际项目中的选择经验..."
+      },
+      "frontend-career-growth": {
+        "title": "前端开发者的成长之路：从入门到进阶",
+        "excerpt": "分享我作为前端开发者的成长经历，包括学习路径、遇到的挑战和收获..."
+      },
+      "micro-frontends-architecture": {
+        "title": "微前端架构实践：大型项目的拆分与协作",
+        "excerpt": "探讨微前端架构的设计思路，分享在实际项目中的应用经验..."
+      }
+    }
+  },
+  "footprints": {
+    "title": "足迹",
+    "subtitle": "记录我走过的路、做过的事、一些瞬间",
+    "items": [
+      {
+        "tag": "学习",
+        "title": "把个人站从 0 到 1 做上线",
+        "desc": "从动画、路由到部署，把体验打磨得更顺滑，也把内容体系搭起来。"
+      },
+      {
+        "tag": "成长",
+        "title": "重构一个老项目的前端架构",
+        "desc": "把边界拆清楚：组件/状态/接口，配上自动化检查与更稳的发布流程。"
+      },
+      {
+        "tag": "生活",
+        "title": "一次旅行带来的灵感",
+        "desc": "看见真实世界的色彩和节奏，回到代码里更愿意做“有温度”的交互。"
+      }
+    ]
+  },
+  "personal": {
+    "name": "于贤秋",
+    "nameEn": "Locke",
+    "nameWithNickname": "Locke（于贤秋）",
+    "location": "中国",
+    "title": "前端工程师（Vue / React / 工程化）",
+    "description": "8 年前端开发经验，专注 Vue / React 生态与前端工程化，擅长复杂架构与性能优化。",
+    "education": "电子科学与技术",
+    "experience": "8年+ 前端开发经验",
+    "hobbies": "编程、设计、音乐、旅行",
+    "bio": "Hi, 我是 Locke（于贤秋）。专注 Vue / React 生态与工程化基础设施（构建、CI/CD、规范、质量），擅长复杂前端架构设计与性能优化，喜欢用可复用的抽象把复杂问题讲清楚、做扎实。"
+  },
+  "skills": {
+    "Vue3": "Vue3",
+    "React": "React",
+    "TypeScript": "TypeScript",
+    "JavaScript": "JavaScript",
+    "前端工程化": "前端工程化",
+    "性能优化": "性能优化",
+    "Vite / Webpack": "Vite / Webpack",
+    "Node.js": "Node.js",
+    "架构设计": "架构设计",
+    "CSS / 动画": "CSS / 动画",
+    "HTML5": "HTML5",
+    "Git": "Git"
+  },
+  "tags": {
+    "响应式": "响应式",
+    "虚拟 DOM": "虚拟 DOM",
+    "源码阅读": "源码阅读",
+    "编译器": "编译器",
+    "组件库": "组件库",
+    "鉴权": "鉴权",
+    "工程实践": "工程实践",
+    "打包器": "打包器"
+  },
+  "projects": {
+    "personal-website": {
+      "name": "personal-website",
+      "description": "个人网站：承载项目/文章/联系方式，持续迭代中。"
+    },
+    "mini-vue3": {
+      "name": "mini-vue3",
+      "description": "从零实现 Vue3 核心响应式、computed、虚拟 DOM 渲染器。",
+      "highlights": ["响应式系统", "computed / effect", "渲染器与 patch 流程"]
+    },
+    "mini-react": {
+      "name": "mini-react",
+      "description": "实现 React Fiber / Hooks / Scheduler 的迷你版本。",
+      "highlights": ["Fiber 调度", "Hooks 机制", "reconciliation 基础流程"]
+    },
+    "vue3-source-analysis": {
+      "name": "vue3-source-analysis",
+      "description": "Vue3 源码阅读笔记（响应式 / 虚拟 DOM / 编译器 / 组件系统）。",
+      "highlights": ["知识体系化梳理", "配套 mini-vue3", "面试/实践可复用"]
+    },
+    "react-source-analysis": {
+      "name": "react-source-analysis",
+      "description": "React 源码阅读笔记（Fiber 架构 / Reconciliation / Hooks / Scheduler）。",
+      "highlights": ["从架构到细节", "配套 mini-react", "理解 React16+ 内核"]
+    },
+    "vue3-component-lib": {
+      "name": "vue3-component-lib",
+      "description": "参考 Element Plus 的 Vue3 组件库（含组件总览/Playground）。",
+      "highlights": ["常用组件沉淀", "交互/可用性打磨", "可扩展架构"]
+    },
+    "react-component-lib": {
+      "name": "react-component-lib",
+      "description": "参考 Ant Design 的 React 组件库（组件齐全，配套 demo）。",
+      "highlights": ["组件工程化", "可复用组件模式", "一致性与体验"]
+    },
+    "vue3-admin-template": {
+      "name": "vue3-admin-template",
+      "description": "Vue3 + Router + Pinia + Axios 的精简后台模板（登录鉴权/角色路由）。",
+      "highlights": ["登录鉴权", "角色路由控制", "基础布局"]
+    },
+    "react-admin-template": {
+      "name": "react-admin-template",
+      "description": "React Router + Zustand + Axios 的后台模板，对齐 Vue 版路由/权限模型。",
+      "highlights": ["路由/权限模型", "工程化基础", "可扩展"]
+    },
+    "react-hooks-collection": {
+      "name": "react-hooks-collection",
+      "description": "业务级 Hooks 集合（useRequest / useVirtualList / useWebSocket 等）。",
+      "highlights": ["可复用业务抽象", "覆盖常见场景", "注重边界与体验"]
+    },
+    "mini-webpack": {
+      "name": "mini-webpack",
+      "description": "迷你版 Webpack：依赖解析 + 模块打包 + runtime require。",
+      "highlights": ["依赖图", "模块系统", "打包流程理解"]
+    },
+    "mini-bundler": {
+      "name": "mini-bundler",
+      "description": "实现 AST 解析、依赖图、Loader / Plugin / Babel 流程的迷你打包器。",
+      "highlights": ["AST 解析", "依赖图构建", "插件化机制"]
+    }
+  },
+  "game": {
+    "tank": {
+      "title": "坦克大战",
+      "help": "WASD / 方向键移动，J 或 空格射击",
+      "startHint": "按空格开始游戏，WASD 或 方向键控制坦克，J 或 空格射击",
+      "restartHint": " 按空格重新开始",
+      "score": "得分",
+      "lives": "生命",
+      "level": "关卡"
+    }
+  },
+  "footer": {
+    "quickLinks": "快速链接",
+    "contactInfo": "联系方式",
+    "shareToWeChat": "转发到微信",
+    "madeWith": "Made with ❤️ and Vue3",
+    "wechatShareTitle": "微信扫码转发",
+    "wechatShareSubtitle": "打开微信扫一扫，把当前页面分享给好友/朋友圈",
+    "generatingQr": "生成二维码中...",
+    "qrGenerateFailed": "二维码生成失败",
+    "retry": "重试"
+  },
+  "comments": {
+    "title": "公开评论",
+    "subtitle": "欢迎路过的朋友留下你的想法（所有人可见）",
+    "nicknameLabel": "昵称（可选）",
+    "nicknamePlaceholder": "匿名 / 你的昵称",
+    "contentLabel": "评论内容",
+    "contentPlaceholder": "写点什么吧…（文明发言，拒绝广告/恶意内容）",
+    "submit": "发布评论",
+    "save": "保存修改",
+    "submitting": "发布中...",
+    "cancelEdit": "取消编辑",
+    "latestComments": "最新评论",
+    "refresh": "刷新",
+    "loading": "加载中...",
+    "empty": "还没有评论，来当第一个吧～",
+    "edit": "编辑",
+    "delete": "删除",
+    "deleteConfirmTitle": "删除这条评论？",
+    "deleteConfirmText": "删除后将无法恢复，只会影响你自己刚才发布的这一条。",
+    "keepIt": "先留着",
+    "confirmDelete": "确认删除",
+    "submitSuccess": "发布成功",
+    "editSuccess": "修改成功",
+    "deleteSuccess": "已删除",
+    "submitFailed": "发布失败",
+    "deleteFailed": "删除失败",
+    "loadFailed": "加载失败",
+    "anonymous": "匿名",
+    "errors": {
+      "emptyResponse": "接口返回空响应",
+      "invalidFormat": "接口返回格式不正确",
+      "requestFailed": "请求失败"
+    }
+  },
+  "contactModal": {
+    "copy": "复制",
+    "copied": "已复制"
+  },
+  "social": {
+    "wechat": "微信",
+    "qq": "QQ",
+    "github": "GitHub",
+    "site": "站点（Vercel）"
+  },
+  "projectCategories": {
+    "个人作品": "个人作品",
+    "源码实现": "源码实现",
+    "源码阅读": "源码阅读",
+    "组件库": "组件库",
+    "Admin 模板": "Admin 模板",
+    "Hooks / 工具": "Hooks / 工具",
+    "工程化 / 构建": "工程化 / 构建"
+  },
+  "blogPosts": {
+    "content": {
+      "opensource-projects": "# 开源项目导航\n\n这篇文章把我 GitHub 上的一些代表性仓库按\"学习路径 + 工程价值\"梳理一遍，方便你快速找到你关心的方向。\n\n> GitHub 主页：[@xianqiuyu](https://github.com/xianqiuyu)\n\n## 1）源码实现类（从零造轮子，理解原理）\n\n* **mini-vue3**：从零实现 Vue3 核心响应式、computed、虚拟 DOM 渲染器  \n  - 推荐给：想把 Vue3 响应式/渲染器吃透的人  \n  - 链接：[mini-vue3](https://github.com/xianqiuyu/mini-vue3)\n* **mini-react**：实现 React Fiber / Hooks / Scheduler 的迷你版本  \n  - 推荐给：想理解 React16+ 内核的人  \n  - 链接：[mini-react](https://github.com/xianqiuyu/mini-react)\n\n## 2）源码阅读类（体系化笔记，构建认知地图）\n\n* **vue3-source-analysis**：Vue3 源码阅读笔记（响应式 / 虚拟 DOM / 编译器 / 组件系统）  \n  - 链接：[vue3-source-analysis](https://github.com/xianqiuyu/vue3-source-analysis)\n* **react-source-analysis**：React 源码阅读笔记（Fiber / Reconciliation / Hooks / Scheduler）  \n  - 链接：[react-source-analysis](https://github.com/xianqiuyu/react-source-analysis)\n\n## 3）组件库类（工程化与设计系统落地）\n\n* **vue3-component-lib**：参考 Element Plus 的 Vue3 组件库（含总览/Playground）  \n  - 链接：[vue3-component-lib](https://github.com/xianqiuyu/vue3-component-lib)\n* **react-component-lib**：参考 Ant Design 的 React 组件库（每个组件配 demo）  \n  - 链接：[react-component-lib](https://github.com/xianqiuyu/react-component-lib)\n\n## 4）Admin 模板类（路由/权限/工程骨架）\n\n* **vue3-admin-template**：Vue3 + Router + Pinia + Axios 精简后台模板（登录鉴权/角色路由）  \n  - 链接：[vue3-admin-template](https://github.com/xianqiuyu/vue3-admin-template)\n* **react-admin-template**：React Router + Zustand + Axios 后台模板（对齐 Vue 版模型）  \n  - 链接：[react-admin-template](https://github.com/xianqiuyu/react-admin-template)\n\n## 5）工程化 / 构建类（打包器原理）\n\n* **mini-webpack**：依赖解析 + 模块打包 + runtime require 的迷你版 Webpack  \n  - 链接：[mini-webpack](https://github.com/xianqiuyu/mini-webpack)\n* **mini-bundler**：AST + 依赖图 + Loader/Plugin + Babel 流程的迷你打包器  \n  - 链接：[mini-bundler](https://github.com/xianqiuyu/mini-bundler)\n\n## 6）Hooks / 工具类（高复用业务抽象）\n\n* **react-hooks-collection**：业务级 Hooks 集合（useRequest / useVirtualList / useWebSocket 等）  \n  - 链接：[react-hooks-collection](https://github.com/xianqiuyu/react-hooks-collection)\n\n## 后记\n\n后续我会把每个项目背后的\"设计取舍、踩坑、可复用套路\"拆成系列文章发出来，也欢迎你在 GitHub 上提 Issue 交流。",
+      "vue3-composition-api": "# Vue3 Composition API 深度解析\n\nVue3 的 Composition API 是 Vue 框架的一次重大革新，它为我们提供了更灵活、更强大的组件组织方式。本文将深入探讨 Composition API 的核心概念、使用场景和最佳实践。\n\n## 什么是 Composition API？\n\nComposition API 是 Vue3 引入的一套新的 API，它允许我们使用函数式的方式来组织组件逻辑。与传统的 Options API 不同，Composition API 将相关的逻辑组织在一起，而不是按照选项（data、methods、computed 等）分散。\n\n### 为什么需要 Composition API？\n\n在大型项目中，使用 Options API 时，相关的逻辑可能会分散在不同的选项中：\n\n\\`\\`\\`javascript\nexport default {\n  data() {\n    return {\n      count: 0,\n      name: ''\n    }\n  },\n  methods: {\n    increment() {\n      this.count++\n    },\n    updateName() {\n      // 处理 name 的逻辑\n    }\n  },\n  computed: {\n    doubleCount() {\n      return this.count * 2\n    }\n  }\n}\n\\`\\`\\`\n\n当组件变得复杂时，这种组织方式会让代码难以维护。Composition API 解决了这个问题：\n\n\\`\\`\\`javascript\nimport { ref, computed } from 'vue'\n\nexport default {\n  setup() {\n    const count = ref(0)\n    const name = ref('')\n    \n    const increment = () => {\n      count.value++\n    }\n    \n    const doubleCount = computed(() => count.value * 2)\n    \n    return {\n      count,\n      name,\n      increment,\n      doubleCount\n    }\n  }\n}\n\\`\\`\\`\n\n## 核心 API 详解\n\n### 1. ref 和 reactive\n\n\\`ref\\` 用于创建响应式的原始值，\\`reactive\\` 用于创建响应式的对象：\n\n\\`\\`\\`javascript\nimport { ref, reactive } from 'vue'\n\n// ref 用于基本类型\nconst count = ref(0)\nconst message = ref('Hello')\n\n// reactive 用于对象\nconst state = reactive({\n  name: 'Vue3',\n  version: '3.0'\n})\n\n// 访问 ref 的值需要使用 .value\nconsole.log(count.value) // 0\ncount.value = 1\n\n// reactive 对象可以直接访问\nconsole.log(state.name) // 'Vue3'\nstate.name = 'Vue 3'\n\\`\\`\\`\n\n### 2. computed 计算属性\n\n\\`computed\\` 用于创建计算属性，它会根据依赖自动更新：\n\n\\`\\`\\`javascript\nimport { ref, computed } from 'vue'\n\nconst firstName = ref('John')\nconst lastName = ref('Doe')\n\nconst fullName = computed({\n  get: () => \\`\\${firstName.value} \\${lastName.value}\\`,\n  set: (newValue) => {\n    const names = newValue.split(' ')\n    firstName.value = names[0]\n    lastName.value = names[names.length - 1]\n  }\n})\n\\`\\`\\`\n\n### 3. watch 和 watchEffect\n\n\\`watch\\` 用于监听特定的数据源，\\`watchEffect\\` 会自动追踪依赖：\n\n\\`\\`\\`javascript\nimport { ref, watch, watchEffect } from 'vue'\n\nconst count = ref(0)\nconst name = ref('')\n\n// watch 监听特定数据源\nwatch(count, (newVal, oldVal) => {\n  console.log(\\`count 从 \\${oldVal} 变为 \\${newVal}\\`)\n})\n\n// watchEffect 自动追踪依赖\nwatchEffect(() => {\n  console.log(\\`count 是: \\${count.value}\\`)\n})\n\\`\\`\\`\n\n### 4. 生命周期钩子\n\nComposition API 提供了对应的生命周期钩子：\n\n\\`\\`\\`javascript\nimport { onMounted, onUpdated, onUnmounted } from 'vue'\n\nexport default {\n  setup() {\n    onMounted(() => {\n      console.log('组件已挂载')\n    })\n    \n    onUpdated(() => {\n      console.log('组件已更新')\n    })\n    \n    onUnmounted(() => {\n      console.log('组件已卸载')\n    })\n  }\n}\n\\`\\`\\`\n\n## 组合式函数（Composables）\n\n组合式函数是 Composition API 的核心优势之一，它允许我们提取和复用逻辑：\n\n\\`\\`\\`javascript\n// useCounter.js\nimport { ref } from 'vue'\n\nexport function useCounter(initialValue = 0) {\n  const count = ref(initialValue)\n  \n  const increment = () => {\n    count.value++\n  }\n  \n  const decrement = () => {\n    count.value--\n  }\n  \n  const reset = () => {\n    count.value = initialValue\n  }\n  \n  return {\n    count,\n    increment,\n    decrement,\n    reset\n  }\n}\n\\`\\`\\`\n\n在组件中使用：\n\n\\`\\`\\`javascript\nimport { useCounter } from './useCounter'\n\nexport default {\n  setup() {\n    const { count, increment, decrement, reset } = useCounter(10)\n    \n    return {\n      count,\n      increment,\n      decrement,\n      reset\n    }\n  }\n}\n\\`\\`\\`\n\n## 实际应用场景\n\n### 1. 数据获取\n\n\\`\\`\\`javascript\nimport { ref, onMounted } from 'vue'\n\nexport function useFetch(url) {\n  const data = ref(null)\n  const loading = ref(false)\n  const error = ref(null)\n  \n  const fetchData = async () => {\n    loading.value = true\n    try {\n      const response = await fetch(url)\n      data.value = await response.json()\n    } catch (e) {\n      error.value = e\n    } finally {\n      loading.value = false\n    }\n  }\n  \n  onMounted(() => {\n    fetchData()\n  })\n  \n  return {\n    data,\n    loading,\n    error,\n    fetchData\n  }\n}\n\\`\\`\\`\n\n### 2. 表单处理\n\n\\`\\`\\`javascript\nimport { ref } from 'vue'\n\nexport function useForm(initialValues) {\n  const formData = ref({ ...initialValues })\n  const errors = ref({})\n  \n  const validate = () => {\n    errors.value = {}\n    // 验证逻辑\n    return Object.keys(errors.value).length === 0\n  }\n  \n  const reset = () => {\n    formData.value = { ...initialValues }\n    errors.value = {}\n  }\n  \n  return {\n    formData,\n    errors,\n    validate,\n    reset\n  }\n}\n\\`\\`\\`\n\n## 最佳实践\n\n1. **使用组合式函数提取逻辑**：将可复用的逻辑提取到组合式函数中\n2. **合理使用 ref 和 reactive**：基本类型用 ref，对象用 reactive\n3. **注意响应式丢失**：解构 reactive 对象会丢失响应式，使用 toRefs\n4. **性能优化**：使用 shallowRef 和 shallowReactive 处理大型对象\n5. **TypeScript 支持**：充分利用 TypeScript 的类型推断\n\n## 总结\n\nComposition API 为 Vue3 带来了更强大的逻辑组织能力，特别适合大型项目。通过组合式函数，我们可以更好地复用代码，提高开发效率。虽然学习曲线相对陡峭，但一旦掌握，你会发现它带来的好处是巨大的。\n\n希望这篇文章能帮助你更好地理解和使用 Composition API。如果你有任何问题，欢迎在评论区讨论！"
+    }
+  }
+}

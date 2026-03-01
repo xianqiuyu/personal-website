@@ -1,5 +1,7 @@
 // 博客文章数据配置
 
+import i18n from '@/i18n'
+
 export interface BlogPost {
   id: string
   title: string
@@ -13,21 +15,13 @@ export interface BlogPost {
   tags: string[]
 }
 
-export const blogPosts: BlogPost[] = [
-  {
-    id: 'opensource-projects',
-    title: '开源项目导航：我做过哪些“从零实现/源码分析/工程化”',
-    excerpt: '把 GitHub 上的核心项目按类型梳理一遍：从 mini-vue3 / mini-react 到组件库、后台模板与打包器。',
-    date: '2026-02-25',
-    category: '开源',
-    icon: '🧭',
-    author: 'Locke（于贤秋）',
-    readTime: '8 分钟',
-    tags: ['开源', '项目索引', 'Vue', 'React', '工程化'],
+// 原始文章数据（用于获取 content，因为内容太长不适合放在 JSON 中）
+const blogPostsContent: Record<string, { content: string }> = {
+  'opensource-projects': {
     content: `
 # 开源项目导航
 
-这篇文章把我 GitHub 上的一些代表性仓库按“学习路径 + 工程价值”梳理一遍，方便你快速找到你关心的方向。
+这篇文章把我 GitHub 上的一些代表性仓库按"学习路径 + 工程价值"梳理一遍，方便你快速找到你关心的方向。
 
 > GitHub 主页：[@xianqiuyu](https://github.com/xianqiuyu)
 
@@ -75,8 +69,22 @@ export const blogPosts: BlogPost[] = [
 
 ## 后记
 
-后续我会把每个项目背后的“设计取舍、踩坑、可复用套路”拆成系列文章发出来，也欢迎你在 GitHub 上提 Issue 交流。
+后续我会把每个项目背后的"设计取舍、踩坑、可复用套路"拆成系列文章发出来，也欢迎你在 GitHub 上提 Issue 交流。
     `
+  }
+}
+
+const postsData = [
+  {
+    id: 'opensource-projects',
+    title: '开源项目导航：我做过哪些"从零实现/源码分析/工程化"',
+    excerpt: '把 GitHub 上的核心项目按类型梳理一遍：从 mini-vue3 / mini-react 到组件库、后台模板与打包器。',
+    date: '2026-02-25',
+    category: '开源',
+    icon: '🧭',
+    author: 'Locke（于贤秋）',
+    readTime: '8 分钟',
+    tags: ['开源', '项目索引', 'Vue', 'React', '工程化']
   },
   {
     id: 'vue3-composition-api',
@@ -2886,12 +2894,56 @@ shadowRoot.innerHTML = '<style>...</style><div>...</div>'
   }
 ]
 
+export function getBlogPosts(locale?: string): BlogPost[] {
+  const t = i18n.global.t
+  const currentLocale = locale || i18n.global.locale.value
+  
+  return postsData.map((post: any) => {
+    const postKey = `blog.posts.${post.id}`
+    const contentKey = `blogPosts.content.${post.id}`
+    
+    // 尝试从国际化文件获取内容，如果不存在则使用原始内容
+    let content = ''
+    try {
+      const translatedContent = t(contentKey)
+      if (translatedContent && translatedContent !== contentKey) {
+        content = translatedContent
+      } else {
+        // 如果翻译不存在，使用原始内容（从 blogPostsContent 或 post.content）
+        content = blogPostsContent[post.id]?.content || post.content || ''
+      }
+    } catch {
+      content = blogPostsContent[post.id]?.content || post.content || ''
+    }
+    
+    return {
+      id: post.id,
+      title: t(`${postKey}.title`) || post.title,
+      excerpt: t(`${postKey}.excerpt`) || post.excerpt,
+      date: post.date,
+      category: t(`blog.categories.${post.category}`) || post.category,
+      icon: post.icon,
+      author: currentLocale === 'en' ? 'Locke' : post.author,
+      readTime: post.readTime,
+      content: content,
+      tags: post.tags.map((tag: string) => {
+        // 尝试翻译标签，如果不存在则使用原标签
+        const tagTranslation = t(`tags.${tag}`)
+        return tagTranslation !== `tags.${tag}` ? tagTranslation : tag
+      })
+    }
+  })
+}
+
+// 为了向后兼容，导出默认值
+export const blogPosts = getBlogPosts()
+
 // 根据 ID 获取文章
-export function getPostById(id: string): BlogPost | undefined {
-  return blogPosts.find(post => post.id === id)
+export function getPostById(id: string, locale?: string): BlogPost | undefined {
+  return getBlogPosts(locale).find(post => post.id === id)
 }
 
 // 获取所有文章
-export function getAllPosts(): BlogPost[] {
-  return blogPosts
+export function getAllPosts(locale?: string): BlogPost[] {
+  return getBlogPosts(locale)
 }

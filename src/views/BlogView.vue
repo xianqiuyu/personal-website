@@ -1,8 +1,8 @@
 <template>
   <div class="blog-page">
     <div class="page-header">
-      <h1 class="page-title">我的博客</h1>
-      <p class="page-subtitle">分享技术心得与生活感悟</p>
+      <h1 class="page-title">{{ $t('blog.title') }}</h1>
+      <p class="page-subtitle">{{ $t('blog.subtitle') }}</p>
     </div>
 
     <div class="container">
@@ -18,13 +18,13 @@
           </div>
           <div class="blog-content">
             <div class="blog-meta">
-              <span class="blog-date">{{ post.date }}</span>
+              <span class="blog-date">{{ formatDate(post.date) }}</span>
               <span class="blog-category">{{ post.category }}</span>
             </div>
             <h3>{{ post.title }}</h3>
             <p>{{ post.excerpt }}</p>
             <div class="blog-footer">
-              <span class="read-more">阅读更多 →</span>
+              <span class="read-more">{{ $t('blog.readMore') }} →</span>
             </div>
           </div>
         </article>
@@ -34,8 +34,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { getAllPosts, type BlogPost } from '@/config/blogPosts'
@@ -43,7 +44,36 @@ import { getAllPosts, type BlogPost } from '@/config/blogPosts'
 gsap.registerPlugin(ScrollTrigger)
 
 const router = useRouter()
-const blogPosts = ref<BlogPost[]>(getAllPosts())
+const { t, locale } = useI18n()
+
+// 获取博客文章并处理国际化
+const rawPosts = getAllPosts()
+const blogPosts = computed(() => {
+  return rawPosts.map(post => {
+    const postKey = `blog.posts.${post.id}`
+    // 获取翻译，如果不存在则使用原文
+    const title = t(`${postKey}.title`, post.title)
+    const excerpt = t(`${postKey}.excerpt`, post.excerpt)
+    const category = t(`blog.categories.${post.category}`, post.category)
+    // readTime 保持原样，因为格式已经是中英文兼容的
+    return {
+      ...post,
+      title,
+      excerpt,
+      category
+    }
+  })
+})
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString)
+  const localeStr = locale.value === 'zh' ? 'zh-CN' : 'en-US'
+  return date.toLocaleDateString(localeStr, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
 
 const viewPost = (post: BlogPost) => {
   router.push(`/blog/${post.id}`)

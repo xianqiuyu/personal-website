@@ -199,10 +199,27 @@ const routes = [
 | Module Federation | 模块级共享 | 性能好、代码共享 | 需要Webpack 5 |
 | iframe | 完全隔离需求 | 简单、隔离彻底 | 性能差、通信复杂 |
 
-**扩展追问：**
-- 微前端的样式隔离如何实现？
-- 如何实现微前端应用间的通信？
-- 微前端的性能优化策略？
+**扩展追问（含简要解答）：**
+
+**Q: 微前端的样式隔离如何实现？**
+> 1. **Shadow DOM**：将子应用挂载到 Shadow DOM 中，样式完全隔离
+> 2. **CSS Scope**：给所有样式加上子应用特定前缀（如 `[data-qiankun="app1"]`）
+> 3. **CSS Modules**：编译时生成唯一类名
+> 4. **动态样式表**：子应用激活时加载样式，卸载时移除
+
+**Q: 如何实现微前端应用间的通信？**
+> 1. **CustomEvent**：`window.dispatchEvent(new CustomEvent('msg', { detail: data }))`
+> 2. **全局状态**：qiankun 的 `initGlobalState` 创建共享状态
+> 3. **发布订阅**：自建 EventBus 或使用 mitt 库
+> 4. **URL 参数**：通过路由参数传递简单数据
+> 5. **LocalStorage/SessionStorage**：持久化共享数据
+
+**Q: 微前端的性能优化策略？**
+> 1. **预加载**：`prefetchApps()` 预加载子应用资源
+> 2. **资源共享**：Module Federation 共享公共依赖（Vue、React）
+> 3. **按需加载**：路由激活时才加载子应用
+> 4. **缓存策略**：子应用资源设置强缓存
+> 5. **沙箱优化**：使用 SnapshotSandbox 代替 ProxySandbox（兼容性场景）
 
 ---
 
@@ -403,10 +420,46 @@ function CountDisplay() {
    - 跨组件共享：Context/Zustand
    - 全局状态：Redux/Pinia
 
-**扩展追问：**
-- Redux的中间件原理是什么？
-- 如何实现一个状态管理库？
-- 状态管理的最佳实践？
+**扩展追问（含简要解答）：**
+
+**Q: Redux的中间件原理是什么？**
+> Redux 中间件采用**洋葱模型**，对 dispatch 进行增强：
+> ```javascript
+> const middleware = store => next => action => {
+>   console.log('before', action)
+>   const result = next(action)  // 调用下一个中间件
+>   console.log('after', action)
+>   return result
+> }
+> ```
+> 核心是 `applyMiddleware` 使用 `compose` 将多个中间件串联，每个中间件可以在 action 到达 reducer 前后执行逻辑。
+
+**Q: 如何实现一个状态管理库？**
+> 核心要素：
+> 1. **存储状态**：使用闭包保存 state
+> 2. **订阅机制**：维护 listeners 数组，state 变化时通知
+> 3. **更新方法**：提供 setState/dispatch 方法修改状态
+> ```javascript
+> function createStore(initialState) {
+>   let state = initialState
+>   const listeners = []
+>   return {
+>     getState: () => state,
+>     setState: (newState) => {
+>       state = { ...state, ...newState }
+>       listeners.forEach(fn => fn(state))
+>     },
+>     subscribe: (fn) => listeners.push(fn)
+>   }
+> }
+> ```
+
+**Q: 状态管理的最佳实践？**
+> 1. **最小化全局状态**：只放真正需要共享的数据
+> 2. **状态规范化**：避免嵌套过深，使用 ID 引用
+> 3. **派生状态用 computed/selector**：避免冗余存储
+> 4. **异步逻辑分离**：使用 actions 或中间件处理副作用
+> 5. **模块化拆分**：大型应用按功能拆分 store
 
 ---
 
@@ -602,10 +655,33 @@ jobs:
       - run: npm run build
 ```
 
-**扩展追问：**
-- Webpack和Vite的区别是什么？
-- 如何优化构建速度？
-- 前端工程化的最佳实践？
+**扩展追问（含简要解答）：**
+
+**Q: Webpack和Vite的区别是什么？**
+> | 对比项 | Webpack | Vite |
+> |-------|---------|------|
+> | 开发模式 | 打包所有模块后启动 | 基于 ESM，按需编译 |
+> | 启动速度 | 慢（需要打包） | 快（秒级启动） |
+> | 热更新 | 重新构建受影响模块 | 精确到单文件，毫秒级 |
+> | 生产构建 | 自身打包 | 使用 Rollup |
+> | 生态 | 非常丰富 | 快速增长中 |
+> | 配置复杂度 | 高 | 低 |
+
+**Q: 如何优化构建速度？**
+> 1. **缓存**：使用 `cache: { type: 'filesystem' }`（Webpack 5）
+> 2. **并行处理**：`thread-loader` 多线程编译
+> 3. **减少范围**：配置 `include/exclude` 缩小 loader 处理范围
+> 4. **DLL 预编译**：提前打包不变的依赖
+> 5. **按需编译**：开发环境使用 Vite 或 ESBuild
+> 6. **代码分割**：合理配置 `splitChunks`
+
+**Q: 前端工程化的最佳实践？**
+> 1. **规范统一**：ESLint + Prettier + EditorConfig
+> 2. **Git 工作流**：Husky + lint-staged + commitlint
+> 3. **自动化测试**：单元测试 + E2E 测试
+> 4. **CI/CD**：GitHub Actions / GitLab CI 自动构建部署
+> 5. **文档化**：README + Storybook 组件文档
+> 6. **监控告警**：错误监控 + 性能监控
 
 ---
 
@@ -781,10 +857,34 @@ class LocalUserRepository implements IUserRepository {
 }
 ```
 
-**扩展追问：**
-- ES Modules和CommonJS的区别？
-- 如何设计可复用的组件库？
-- 模块化的最佳实践？
+**扩展追问（含简要解答）：**
+
+**Q: ES Modules和CommonJS的区别？**
+> | 对比项 | ES Modules | CommonJS |
+> |-------|-----------|----------|
+> | 加载方式 | 编译时静态分析 | 运行时动态加载 |
+> | 导出 | `export` / `export default` | `module.exports` |
+> | 导入 | `import` | `require()` |
+> | 值类型 | 引用绑定（实时） | 值拷贝 |
+> | 循环依赖 | 支持（引用绑定） | 可能出问题 |
+> | Tree Shaking | ✅ 支持 | ❌ 不支持 |
+> | 使用环境 | 浏览器 + Node.js | Node.js |
+
+**Q: 如何设计可复用的组件库？**
+> 1. **API 设计**：props 命名一致、提供默认值、支持 v-model
+> 2. **样式隔离**：CSS Modules / Scoped CSS / CSS-in-JS
+> 3. **主题定制**：CSS 变量 / SCSS 变量 / Design Token
+> 4. **按需加载**：支持 tree shaking，提供 ESM 产物
+> 5. **文档完善**：Storybook / VitePress 展示用例
+> 6. **类型支持**：完整的 TypeScript 类型定义
+> 7. **测试覆盖**：单元测试 + 视觉回归测试
+
+**Q: 模块化的最佳实践？**
+> 1. **单一职责**：每个模块只做一件事
+> 2. **高内聚低耦合**：相关代码放一起，减少模块间依赖
+> 3. **统一导出**：使用 `index.ts` 作为模块入口
+> 4. **避免循环依赖**：提取公共模块或使用依赖注入
+> 5. **命名规范**：文件名、导出名保持一致
 
 ---
 
@@ -947,10 +1047,36 @@ class MonitoringService {
 }
 ```
 
-**扩展追问：**
-- 如何实现前端错误监控系统？
-- 性能监控的关键指标有哪些？
-- 如何避免监控系统影响用户体验？
+**扩展追问（含简要解答）：**
+
+**Q: 如何实现前端错误监控系统？**
+> 1. **错误捕获**：
+>    - `window.onerror` / `window.addEventListener('error')` 捕获 JS 错误
+>    - `unhandledrejection` 捕获 Promise 错误
+>    - React ErrorBoundary / Vue errorHandler 捕获框架错误
+> 2. **数据采集**：错误信息、堆栈、用户信息、页面 URL、时间戳
+> 3. **上报策略**：批量上报、采样上报、错误去重
+> 4. **Source Map**：生产环境还原压缩代码的堆栈
+> 5. **告警通知**：邮件、钉钉、飞书等通知
+
+**Q: 性能监控的关键指标有哪些？**
+> **Core Web Vitals（核心指标）**：
+> - **LCP**（Largest Contentful Paint）：最大内容绘制，< 2.5s
+> - **FID**（First Input Delay）：首次输入延迟，< 100ms
+> - **CLS**（Cumulative Layout Shift）：累积布局偏移，< 0.1
+>
+> **其他重要指标**：
+> - **FCP**（First Contentful Paint）：首次内容绘制
+> - **TTFB**（Time to First Byte）：首字节时间
+> - **TTI**（Time to Interactive）：可交互时间
+
+**Q: 如何避免监控系统影响用户体验？**
+> 1. **异步上报**：使用 `requestIdleCallback` 或 `setTimeout` 延迟上报
+> 2. **批量合并**：积累一定数量后批量发送
+> 3. **采样策略**：非关键数据进行采样（如 10%）
+> 4. **使用 Beacon API**：页面卸载时也能可靠发送
+> 5. **压缩数据**：减少上报数据体积
+> 6. **独立域名**：监控请求不与业务请求竞争
 
 ---
 
@@ -1038,10 +1164,35 @@ if (location.protocol !== 'https:') {
       content="default-src 'self'; script-src 'self' 'unsafe-inline';">
 ```
 
-**扩展追问：**
-- 如何防范XSS攻击？
-- 前端安全的最佳实践？
-- 如何实现安全的认证和授权？
+**扩展追问（含简要解答）：**
+
+**Q: 如何防范XSS攻击？**
+> 1. **输入过滤**：对用户输入进行验证和过滤
+> 2. **输出转义**：渲染时转义 `< > " ' &` 等特殊字符
+> 3. **使用框架**：React/Vue 默认会转义 `{}`/`{{}}` 中的内容
+> 4. **避免 innerHTML**：使用 `textContent` 或框架绑定
+> 5. **CSP 策略**：禁止内联脚本，限制资源来源
+> 6. **HttpOnly Cookie**：防止 JS 读取敏感 Cookie
+
+**Q: 前端安全的最佳实践？**
+> 1. **HTTPS 全站**：防止中间人攻击
+> 2. **CSP 头**：限制资源加载来源
+> 3. **CSRF Token**：表单和 API 请求携带 Token
+> 4. **敏感信息不存前端**：密钥、密码等放后端
+> 5. **依赖安全**：定期 `npm audit`，更新有漏洞的包
+> 6. **输入验证**：前后端都要验证
+> 7. **权限控制**：前端路由守卫 + 后端接口鉴权
+
+**Q: 如何实现安全的认证和授权？**
+> 1. **认证方式**：
+>    - **JWT**：无状态，适合分布式；注意设置过期时间
+>    - **Session**：有状态，更安全；需要 Redis 存储
+>    - **OAuth 2.0**：第三方登录
+> 2. **Token 存储**：
+>    - `HttpOnly Cookie`（推荐，防 XSS）
+>    - `localStorage`（方便，但有 XSS 风险）
+> 3. **刷新机制**：Access Token 短期 + Refresh Token 长期
+> 4. **权限设计**：RBAC（基于角色） / ABAC（基于属性）
 
 ---
 
@@ -1106,9 +1257,45 @@ function createButton(type) {
 }
 ```
 
-**扩展追问：**
-- 前端开发中常用的设计模式有哪些？
-- 如何在前端项目中应用设计模式？
+**扩展追问（含简要解答）：**
+
+**Q: 前端开发中常用的设计模式有哪些？**
+> 1. **单例模式**：全局状态管理、API Client、日志服务
+> 2. **观察者模式**：事件系统、Vue 响应式、Redux subscribe
+> 3. **发布订阅模式**：EventBus、Node.js EventEmitter
+> 4. **工厂模式**：组件工厂、根据类型创建不同实例
+> 5. **策略模式**：表单验证规则、不同支付方式
+> 6. **装饰器模式**：HOC、装饰器语法 @decorator
+> 7. **代理模式**：Vue 3 Proxy、axios 拦截器
+> 8. **适配器模式**：统一不同 API 的数据格式
+
+**Q: 如何在前端项目中应用设计模式？**
+> 1. **单例模式**：
+>    ```javascript
+>    // API 服务单例
+>    export const apiClient = new ApiClient() // 直接导出实例
+>    ```
+> 2. **策略模式**：
+>    ```javascript
+>    const validators = {
+>      email: (v) => /^.+@.+$/.test(v),
+>      phone: (v) => /^\d{11}$/.test(v)
+>    }
+>    const validate = (type, value) => validators[type](value)
+>    ```
+> 3. **观察者模式**：
+>    ```javascript
+>    // Vue watch / React useEffect 本质就是观察者
+>    watch(count, (newVal) => console.log(newVal))
+>    ```
+> 4. **装饰器模式**：
+>    ```javascript
+>    // React HOC
+>    const withAuth = (Component) => (props) => {
+>      if (!isLogin) return <Login />
+>      return <Component {...props} />
+>    }
+>    ```
 
 ---
 

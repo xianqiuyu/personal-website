@@ -25,19 +25,21 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useContactInfoModalStore } from '@/stores/contactInfoModal'
 import WeChatIcon from '@/components/icons/WeChatIcon.vue'
 import QQIcon from '@/components/icons/QQIcon.vue'
 
+const { t } = useI18n()
 const modal = useContactInfoModalStore()
-const copyBtnText = ref('复制')
+const copyBtnText = ref(t('contactModal.copy'))
 
 const copyToClipboard = async () => {
   try {
     await navigator.clipboard.writeText(modal.copyText)
-    copyBtnText.value = '已复制'
+    copyBtnText.value = t('contactModal.copied')
     setTimeout(() => {
-      copyBtnText.value = '复制'
+      copyBtnText.value = t('contactModal.copy')
     }, 1500)
   } catch {
     // 备用方案
@@ -48,9 +50,9 @@ const copyToClipboard = async () => {
     document.execCommand('copy')
     document.body.removeChild(textArea)
 
-    copyBtnText.value = '已复制'
+    copyBtnText.value = t('contactModal.copied')
     setTimeout(() => {
-      copyBtnText.value = '复制'
+      copyBtnText.value = t('contactModal.copy')
     }, 1500)
   }
 }

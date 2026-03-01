@@ -5,22 +5,22 @@
       <div class="hero-content">
         <div class="hero-text">
           <h1 class="hero-title" ref="titleRef">
-            <span class="title-line">你好，我是</span>
-            <span class="title-name">{{ personalInfo.name || '你的名字' }}</span>
+            <span class="title-line">{{ $t('home.greeting') }}</span>
+            <span class="title-name">{{ $t('personal.name') }}</span>
           </h1>
           <p class="hero-subtitle" ref="subtitleRef">
-            {{ personalInfo.title || '前端工程师' }}
+            {{ $t('personal.title') }}
           </p>
           <p class="hero-description" ref="descriptionRef">
-            {{ personalInfo.description || '热爱创造酷炫的交互体验，用代码让世界更美好 ✨' }}
+            {{ $t('personal.description') }}
           </p>
           <div class="hero-buttons" ref="buttonsRef">
             <router-link to="/contact" class="btn btn-primary">
-              <span>联系我</span>
+              <span>{{ $t('home.contactMe') }}</span>
               <span class="btn-icon">💌</span>
             </router-link>
             <router-link to="/portfolio" class="btn btn-secondary">
-              <span>查看作品</span>
+              <span>{{ $t('home.viewPortfolio') }}</span>
               <span class="btn-icon">🎨</span>
             </router-link>
           </div>
@@ -39,7 +39,7 @@
         </div>
       </div>
       <router-link to="/about" class="scroll-indicator">
-        <span>了解更多</span>
+        <span>{{ $t('home.learnMore') }}</span>
         <div class="mouse"></div>
       </router-link>
     </section>
@@ -47,26 +47,26 @@
     <!-- 关于我 -->
     <section id="about" class="about" ref="aboutRef">
       <div class="container">
-        <h2 class="section-title">关于我</h2>
+        <h2 class="section-title">{{ $t('home.aboutMe') }}</h2>
         <div class="about-content">
           <div class="about-card">
             <div class="card-icon">🎓</div>
-            <h3>教育背景</h3>
-            <p>{{ personalInfo.education || '计算机科学专业' }}</p>
+            <h3>{{ $t('home.education') }}</h3>
+            <p>{{ $t('personal.education') }}</p>
           </div>
           <div class="about-card">
             <div class="card-icon">💼</div>
-            <h3>工作经验</h3>
-            <p>{{ personalInfo.experience || '3年+ 前端开发经验' }}</p>
+            <h3>{{ $t('home.experience') }}</h3>
+            <p>{{ $t('personal.experience') }}</p>
           </div>
           <div class="about-card">
             <div class="card-icon">🎯</div>
-            <h3>兴趣爱好</h3>
-            <p>{{ personalInfo.hobbies || '编程、设计、音乐、旅行' }}</p>
+            <h3>{{ $t('home.hobbies') }}</h3>
+            <p>{{ $t('personal.hobbies') }}</p>
           </div>
         </div>
         <div class="about-text">
-          <p>{{ personalInfo.bio || '我是一名充满热情的前端工程师，专注于创造美观且功能强大的用户界面。我喜欢学习新技术，探索创新的解决方案，并将想法转化为现实。' }}</p>
+          <p>{{ $t('personal.bio') }}</p>
         </div>
       </div>
     </section>
@@ -74,11 +74,11 @@
     <!-- 技能 -->
     <section id="skills" class="skills" ref="skillsRef">
       <div class="container">
-        <h2 class="section-title">技能树</h2>
+        <h2 class="section-title">{{ $t('home.skillsTree') }}</h2>
         <div class="skills-grid">
-          <div 
-            v-for="(skill, index) in skills" 
-            :key="index" 
+          <div
+            v-for="(skill, index) in skills"
+            :key="index"
             class="skill-card"
             :style="{ animationDelay: `${index * 0.1}s` }"
           >
@@ -96,7 +96,7 @@
     <!-- 联系方式 -->
     <section id="contact" class="contact" ref="contactRef">
       <div class="container">
-        <h2 class="section-title">联系我</h2>
+        <h2 class="section-title">{{ $t('home.contactMeTitle') }}</h2>
         <div class="contact-content">
           <div class="contact-info">
             <div class="contact-item">
@@ -111,7 +111,7 @@
             </div>
             <div class="contact-item">
               <span class="contact-icon">📍</span>
-              <span>{{ personalInfo.location || '中国' }}</span>
+              <span>{{ personalInfo.location || $t('personal.location') }}</span>
             </div>
           </div>
           <div class="social-links">
@@ -131,7 +131,7 @@
                 <QQIcon v-else-if="link.icon === 'qq'" />
                 <span v-else class="social-icon">{{ link.icon }}</span>
               </div>
-              <span class="social-name">{{ link.name }}</span>
+              <span class="social-name">{{ getSocialLinkName(link) }}</span>
             </div>
           </div>
         </div>
@@ -141,7 +141,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -153,12 +154,30 @@ import { useContactInfoModalStore } from '@/stores/contactInfoModal'
 gsap.registerPlugin(ScrollTrigger)
 
 const router = useRouter()
+const { t } = useI18n()
 
 // 个人信息（从配置文件导入，可在 src/config/personalInfo.ts 中修改）
 const personalInfo = ref(personalInfoConfig)
-const skills = ref(skillsConfig)
+const skillsConfigRef = ref(skillsConfig)
 const socialLinks = ref(socialLinksConfig)
 const contactModal = useContactInfoModalStore()
+
+// 翻译后的技能列表
+const skills = computed(() => {
+  return skillsConfigRef.value.map(skill => ({
+    ...skill,
+    name: t(`skills.${skill.name}`, skill.name)
+  }))
+})
+
+// 翻译社交链接名称
+const getSocialLinkName = (link: any) => {
+  if (link.icon === 'wechat') return t('social.wechat')
+  if (link.icon === 'qq') return t('social.qq')
+  if (link.name === 'GitHub') return t('social.github')
+  if (link.name === '站点（Vercel）') return t('social.site')
+  return link.name
+}
 
 // Refs
 const heroRef = ref<HTMLElement>()
@@ -180,11 +199,11 @@ const scrollTo = (id: string) => {
 }
 
 const handleSocialClick = (link: any) => {
-  if (link.name === '微信') {
+  if (link.icon === 'wechat') {
     contactModal.openWeChat('yuxianqiu1995')
     return
   }
-  if (link.name === 'QQ') {
+  if (link.icon === 'qq') {
     contactModal.openQQ('2535462360')
     return
   }
@@ -199,7 +218,7 @@ onMounted(() => {
   // Hero 区域动画
   if (titleRef.value && subtitleRef.value && descriptionRef.value && buttonsRef.value && imageRef.value) {
     const tl = gsap.timeline()
-    
+
     tl.from(titleRef.value.children, {
       y: 50,
       opacity: 0,

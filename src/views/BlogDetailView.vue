@@ -3,7 +3,7 @@
     <div class="container">
       <router-link to="/blog" class="back-link">
         <span class="back-icon">←</span>
-        <span>返回博客列表</span>
+        <span>{{ $t('blog.backToList') }}</span>
       </router-link>
 
       <article v-if="post" class="blog-article">
@@ -37,15 +37,15 @@
         <!-- 文章底部 -->
         <footer class="article-footer">
           <div class="share-section">
-            <h3>分享这篇文章</h3>
+            <h3>{{ $t('blog.shareArticle') }}</h3>
             <div class="share-buttons">
               <button class="share-btn" @click="shareToWeChat">
                 <span>💬</span>
-                <span>转发到微信</span>
+                <span>{{ $t('blog.shareToWeChat') }}</span>
               </button>
               <button class="share-btn" @click="copyLink">
                 <span>🔗</span>
-                <span>复制链接</span>
+                <span>{{ $t('blog.copyLink') }}</span>
               </button>
             </div>
           </div>
@@ -53,28 +53,28 @@
       </article>
 
       <div v-else class="not-found">
-        <h2>文章未找到</h2>
-        <router-link to="/blog" class="back-to-blog">返回博客列表</router-link>
+        <h2>{{ $t('blog.articleNotFound') }}</h2>
+        <router-link to="/blog" class="back-to-blog">{{ $t('blog.backToList') }}</router-link>
       </div>
 
       <!-- 微信分享弹窗（二维码） -->
       <div v-if="showWeChatShare" class="wechat-share-overlay" @click="closeWeChatShare">
         <div class="wechat-share-modal" @click.stop>
           <button class="wechat-close" @click="closeWeChatShare">×</button>
-          <h3 class="wechat-title">微信扫码转发</h3>
-          <p class="wechat-subtitle">打开微信扫一扫，把当前页面分享给好友/朋友圈</p>
+          <h3 class="wechat-title">{{ $t('blog.wechatShareTitle') }}</h3>
+          <p class="wechat-subtitle">{{ $t('blog.wechatShareSubtitle') }}</p>
 
           <div class="wechat-qr">
             <div v-if="isGeneratingQr" class="wechat-qr-loading">
               <div class="spinner"></div>
-              <span>生成二维码中...</span>
+              <span>{{ $t('blog.generatingQr') }}</span>
             </div>
-            <img v-else-if="qrDataUrl" :src="qrDataUrl" alt="微信分享二维码" />
+            <img v-else-if="qrDataUrl" :src="qrDataUrl" :alt="$t('blog.wechatQrAlt')" />
             <div v-else class="wechat-qr-error">
-              <p>二维码生成失败</p>
+              <p>{{ $t('blog.qrGenerateFailed') }}</p>
               <button class="share-btn" @click="generateQrCode">
                 <span>🔁</span>
-                <span>重试</span>
+                <span>{{ $t('common.retry') }}</span>
               </button>
             </div>
           </div>
@@ -82,7 +82,7 @@
           <div class="wechat-actions">
             <button class="share-btn" @click="copyLink">
               <span>🔗</span>
-              <span>复制链接</span>
+              <span>{{ $t('blog.copyLink') }}</span>
             </button>
           </div>
         </div>
@@ -94,12 +94,14 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { gsap } from 'gsap'
 import QRCode from 'qrcode'
 import { getPostById, type BlogPost } from '@/config/blogPosts'
 
 const route = useRoute()
 const router = useRouter()
+const { t, locale } = useI18n()
 const post = ref<BlogPost | undefined>(undefined)
 
 const showWeChatShare = ref(false)
@@ -133,7 +135,8 @@ const generateQrCode = async () => {
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
-  return date.toLocaleDateString('zh-CN', {
+  const localeStr = locale.value === 'zh' ? 'zh-CN' : 'en-US'
+  return date.toLocaleDateString(localeStr, {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
@@ -182,14 +185,14 @@ const escapeHtml = (text: string) => {
 
 const shareToWeChat = async () => {
   const url = window.location.href
-  const title = post.value?.title ?? '分享一篇文章'
+  const title = post.value?.title ?? t('blog.shareArticle')
 
   // 优先使用系统分享（支持的浏览器会弹出分享面板，移动端体验最好）
   if (navigator.share) {
     try {
       await navigator.share({
         title,
-        text: '我在个人网站看到一篇不错的文章，分享给你～',
+        text: t('blog.shareText'),
         url
       })
       return
@@ -208,7 +211,7 @@ const shareToWeChat = async () => {
 const copyLink = () => {
   const url = window.location.href
   navigator.clipboard.writeText(url).then(() => {
-    alert('链接已复制到剪贴板！')
+    alert(t('blog.linkCopied'))
   })
 }
 

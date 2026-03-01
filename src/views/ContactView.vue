@@ -1,45 +1,45 @@
 <template>
   <div class="contact-page">
     <div class="page-header">
-      <h1 class="page-title">联系我</h1>
-      <p class="page-subtitle">让我们一起创造美好的事物</p>
+      <h1 class="page-title">{{ $t('contact.title') }}</h1>
+      <p class="page-subtitle">{{ $t('contact.subtitle') }}</p>
     </div>
 
     <div class="container">
       <div class="contact-content">
         <!-- 联系信息 -->
         <div class="contact-info-section">
-          <h2 class="section-title">联系方式</h2>
+          <h2 class="section-title">{{ $t('contact.contactInfo') }}</h2>
           <div class="contact-info">
             <div class="contact-item">
               <span class="contact-icon">📧</span>
               <div class="contact-details">
-                <h3>邮箱</h3>
+                <h3>{{ $t('contact.email') }}</h3>
                 <a :href="`mailto:${personalInfo.email}`">{{ personalInfo.email }}</a>
               </div>
             </div>
             <div class="contact-item">
               <span class="contact-icon">📱</span>
               <div class="contact-details">
-                <h3>电话</h3>
+                <h3>{{ $t('contact.phone') }}</h3>
                 <a :href="`tel:${personalInfo.phone}`">{{ personalInfo.phone }}</a>
               </div>
             </div>
             <div class="contact-item">
               <span class="contact-icon">📍</span>
               <div class="contact-details">
-                <h3>地址</h3>
-                <p>{{ personalInfo.location }}</p>
+                <h3>{{ $t('contact.address') }}</h3>
+                <p>{{ $t('personal.location') }}</p>
               </div>
             </div>
           </div>
 
           <!-- 社交链接 -->
           <div class="social-section">
-            <h2 class="section-title">社交媒体</h2>
+            <h2 class="section-title">{{ $t('contact.socialMedia') }}</h2>
             <div class="social-links">
-              <div 
-                v-for="(link, index) in socialLinks" 
+              <div
+                v-for="(link, index) in socialLinks"
                 :key="index"
                 class="social-link"
                 :style="{ animationDelay: `${index * 0.1}s` }"
@@ -50,7 +50,7 @@
                   <QQIcon v-else-if="link.icon === 'qq'" />
                   <span v-else class="social-icon">{{ link.icon }}</span>
                 </div>
-                <span class="social-name">{{ link.name }}</span>
+                <span class="social-name">{{ getSocialLinkName(link) }}</span>
               </div>
             </div>
           </div>
@@ -58,51 +58,51 @@
 
         <!-- 联系表单 -->
         <div class="contact-form-section">
-          <h2 class="section-title">发送消息</h2>
+          <h2 class="section-title">{{ $t('contact.sendMessage') }}</h2>
           <form @submit.prevent="handleSubmit" class="contact-form">
             <div class="form-group">
-              <label for="name">姓名</label>
-              <input 
-                type="text" 
-                id="name" 
-                v-model="form.name" 
+              <label for="name">{{ $t('contact.name') }}</label>
+              <input
+                type="text"
+                id="name"
+                v-model="form.name"
                 required
-                placeholder="请输入您的姓名"
+                :placeholder="$t('contact.namePlaceholder')"
               />
             </div>
             <div class="form-group">
-              <label for="email">邮箱</label>
-              <input 
-                type="email" 
-                id="email" 
-                v-model="form.email" 
+              <label for="email">{{ $t('contact.email') }}</label>
+              <input
+                type="email"
+                id="email"
+                v-model="form.email"
                 required
-                placeholder="请输入您的邮箱"
+                :placeholder="$t('contact.emailPlaceholder')"
               />
             </div>
             <div class="form-group">
-              <label for="subject">主题</label>
-              <input 
-                type="text" 
-                id="subject" 
-                v-model="form.subject" 
+              <label for="subject">{{ $t('contact.subject') }}</label>
+              <input
+                type="text"
+                id="subject"
+                v-model="form.subject"
                 required
-                placeholder="请输入消息主题"
+                :placeholder="$t('contact.subjectPlaceholder')"
               />
             </div>
             <div class="form-group">
-              <label for="message">消息</label>
-              <textarea 
-                id="message" 
-                v-model="form.message" 
+              <label for="message">{{ $t('contact.message') }}</label>
+              <textarea
+                id="message"
+                v-model="form.message"
                 required
                 rows="6"
-                placeholder="请输入您的消息..."
+                :placeholder="$t('contact.messagePlaceholder')"
               ></textarea>
             </div>
             <button type="submit" class="submit-btn" :disabled="isSubmitting">
-              <span v-if="!isSubmitting">发送消息</span>
-              <span v-else>发送中...</span>
+              <span v-if="!isSubmitting">{{ $t('contact.sendMessage') }}</span>
+              <span v-else>{{ $t('contact.sending') }}</span>
               <span class="btn-icon" v-if="!isSubmitting">📨</span>
               <span class="btn-icon" v-else>⏳</span>
             </button>
@@ -118,6 +118,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import emailjs from '@emailjs/browser'
@@ -126,7 +127,17 @@ import WeChatIcon from '@/components/icons/WeChatIcon.vue'
 import QQIcon from '@/components/icons/QQIcon.vue'
 import { useContactInfoModalStore } from '@/stores/contactInfoModal'
 
+const { t } = useI18n()
 gsap.registerPlugin(ScrollTrigger)
+
+// 翻译社交链接名称
+const getSocialLinkName = (link: any) => {
+  if (link.icon === 'wechat') return t('social.wechat')
+  if (link.icon === 'qq') return t('social.qq')
+  if (link.name === 'GitHub') return t('social.github')
+  if (link.name === '站点（Vercel）') return t('social.site')
+  return link.name
+}
 
 const form = ref({
   name: '',
@@ -163,7 +174,7 @@ onMounted(() => {
 const handleSubmit = async () => {
   // 验证表单
   if (!form.value.name || !form.value.email || !form.value.subject || !form.value.message) {
-    submitMessage.value = '请填写所有必填字段'
+    submitMessage.value = t('common.fillAllFields')
     isSuccess.value = false
     setTimeout(() => {
       submitMessage.value = ''
@@ -192,14 +203,14 @@ const handleSubmit = async () => {
         templateParams
       )
 
-      submitMessage.value = '消息发送成功！我会尽快回复您。'
+      submitMessage.value = t('contact.sendSuccess')
       isSuccess.value = true
     } else {
       // 如果未配置 EmailJS，使用 mailto 作为备用方案
-      const mailtoLink = `mailto:${personalInfo.email}?subject=${encodeURIComponent(form.value.subject)}&body=${encodeURIComponent(`姓名: ${form.value.name}\n邮箱: ${form.value.email}\n\n${form.value.message}`)}`
+      const mailtoLink = `mailto:${personalInfo.email}?subject=${encodeURIComponent(form.value.subject)}&body=${encodeURIComponent(`${t('contact.nameLabel')} ${form.value.name}\n${t('contact.emailLabel')} ${form.value.email}\n\n${form.value.message}`)}`
       window.location.href = mailtoLink
-      
-      submitMessage.value = '正在打开邮件客户端...'
+
+      submitMessage.value = t('contact.sendSuccess')
       isSuccess.value = true
     }
 
@@ -217,9 +228,9 @@ const handleSubmit = async () => {
     }, 5000)
   } catch (error) {
     console.error('发送邮件失败:', error)
-    submitMessage.value = '发送失败，请稍后重试或直接发送邮件到 ' + personalInfo.email
+    submitMessage.value = t('contact.sendFailed') + ' ' + personalInfo.email
     isSuccess.value = false
-    
+
     // 5秒后清除错误消息
     setTimeout(() => {
       submitMessage.value = ''
@@ -231,9 +242,9 @@ const handleSubmit = async () => {
 
 // 处理社交链接点击
 const handleSocialClick = (link: any) => {
-  if (link.name === '微信') {
+  if (link.icon === 'wechat') {
     contactModal.openWeChat('yuxianqiu1995')
-  } else if (link.name === 'QQ') {
+  } else if (link.icon === 'qq') {
     contactModal.openQQ('2535462360')
   } else if (link.url && link.url !== '#') {
     window.open(link.url, '_blank')

@@ -191,10 +191,45 @@ function Page() {
 - [ ] 减少HTTP请求数
 - [ ] 使用HTTP/2
 
-**扩展追问：**
-- 如何量化首屏加载时间？
-- SSR和CSR的性能对比？
-- Tree-shaking的原理是什么？
+**扩展追问（含简要解答）：**
+
+**Q: 如何量化首屏加载时间？**
+> 1. **使用 Performance API**：
+>    ```javascript
+>    // FCP (First Contentful Paint)
+>    const fcp = performance.getEntriesByName('first-contentful-paint')[0]
+>    // DOMContentLoaded
+>    const dcl = performance.timing.domContentLoadedEventEnd - performance.timing.navigationStart
+>    ```
+> 2. **使用 web-vitals 库**：`getFCP()`, `getLCP()`, `getTTFB()`
+> 3. **Lighthouse 审计**：生成详细的性能报告
+> 4. **自定义埋点**：在关键节点打点计算时间差
+> 5. **关键指标**：
+>    - **TTFB** < 200ms（首字节时间）
+>    - **FCP** < 1.8s（首次内容绘制）
+>    - **LCP** < 2.5s（最大内容绘制）
+
+**Q: SSR和CSR的性能对比？**
+> | 对比项 | CSR（客户端渲染） | SSR（服务端渲染） |
+> |-------|-----------------|-----------------|
+> | 首屏速度 | 慢（需下载+执行JS） | 快（直接返回HTML） |
+> | SEO | 差（爬虫看到空页面） | 好（完整HTML） |
+> | 服务器压力 | 低 | 高（每次渲染消耗CPU） |
+> | 交互响应 | 首屏后快 | 需要 Hydration |
+> | 开发复杂度 | 低 | 高（需考虑SSR兼容） |
+> | 适用场景 | 后台管理系统 | 内容站、SEO敏感页面 |
+>
+> **最佳实践**：使用 SSG（静态生成）+ ISR（增量静态再生）兼顾性能和SEO
+
+**Q: Tree-shaking的原理是什么？**
+> 1. **依赖 ES Modules**：ESM 是静态结构，可在编译时分析依赖
+> 2. **标记未使用代码**：Webpack 的 `usedExports: true` 标记未使用的 export
+> 3. **删除死代码**：Terser 等压缩工具移除未引用的代码
+> 4. **副作用声明**：`package.json` 中 `sideEffects: false` 告知打包器模块无副作用
+> 5. **注意事项**：
+>    - CommonJS 不支持 Tree-shaking
+>    - 避免 `import * as xxx`
+>    - 避免在模块顶层执行有副作用的代码
 
 ---
 
@@ -371,10 +406,52 @@ performance.mark('end')
 performance.measure('my-measure', 'start', 'end')
 ```
 
-**扩展追问：**
-- 如何定位性能瓶颈？
-- 重排和重绘的区别？
-- GPU加速的原理是什么？
+**扩展追问（含简要解答）：**
+
+**Q: 如何定位性能瓶颈？**
+> 1. **Chrome DevTools Performance**：
+>    - 录制页面操作，分析火焰图
+>    - 查看 Main 线程的长任务（Long Tasks > 50ms）
+>    - 识别频繁的重排重绘（紫色Layout、绿色Paint）
+> 2. **Lighthouse**：生成性能评分和优化建议
+> 3. **React DevTools Profiler**：分析组件渲染耗时
+> 4. **Performance API**：
+>    ```javascript
+>    performance.mark('start')
+>    // 代码执行
+>    performance.mark('end')
+>    performance.measure('耗时', 'start', 'end')
+>    ```
+> 5. **关注指标**：JS 执行时间、Layout 时间、网络请求瀑布图
+
+**Q: 重排和重绘的区别？**
+> | 对比项 | 重排（Reflow） | 重绘（Repaint） |
+> |-------|---------------|----------------|
+> | 触发条件 | 几何属性改变（位置、尺寸） | 视觉属性改变（颜色、背景） |
+> | 影响范围 | 可能影响整个渲染树 | 仅影响当前元素 |
+> | 性能消耗 | 高（需重新计算布局） | 中 |
+> | 触发属性 | width/height/top/left/offsetWidth | color/background/visibility |
+> | 关系 | 重排一定会重绘 | 重绘不一定重排 |
+>
+> **优化原则**：减少重排 > 减少重绘 > 使用 transform/opacity（仅触发合成）
+
+**Q: GPU加速的原理是什么？**
+> 1. **合成层（Compositing Layer）**：
+>    - 使用 `transform`、`opacity`、`will-change` 可创建独立合成层
+>    - 合成层由 GPU 单独处理，不影响其他层
+> 2. **工作流程**：
+>    - 普通渲染：JS → Style → Layout → Paint → Composite
+>    - GPU加速：JS → Style → Composite（跳过 Layout 和 Paint）
+> 3. **触发方式**：
+>    ```css
+>    .gpu-accelerated {
+>      transform: translateZ(0); /* 或 translate3d(0,0,0) */
+>      will-change: transform;
+>    }
+>    ```
+> 4. **注意事项**：
+>    - 不要滥用，每个合成层都消耗内存
+>    - 使用 Chrome DevTools Layers 面板检查合成层数量
 
 ---
 
@@ -537,10 +614,51 @@ function Component() {
 }
 ```
 
-**扩展追问：**
-- HTTP/2相比HTTP/1.1的优势？
-- 如何实现请求去重？
-- CDN的工作原理？
+**扩展追问（含简要解答）：**
+
+**Q: HTTP/2相比HTTP/1.1的优势？**
+> | 特性 | HTTP/1.1 | HTTP/2 |
+> |-----|---------|--------|
+> | 连接复用 | 每个请求需要单独连接 | 多路复用，一个连接并发多个请求 |
+> | 头部压缩 | 无 | HPACK 压缩，减少重复头部 |
+> | 服务器推送 | 无 | 可主动推送资源 |
+> | 请求优先级 | 无 | 支持设置请求优先级 |
+> | 二进制传输 | 文本格式 | 二进制帧，解析更快 |
+>
+> **实际影响**：HTTP/2 下不再需要合并请求、雪碧图等 HTTP/1.1 优化手段
+
+**Q: 如何实现请求去重？**
+> ```javascript
+> const pendingRequests = new Map()
+> 
+> async function fetchWithDedup(url, options) {
+>   const key = `${url}-${JSON.stringify(options)}`
+>   
+>   // 如果有相同请求正在进行，返回同一个 Promise
+>   if (pendingRequests.has(key)) {
+>     return pendingRequests.get(key)
+>   }
+>   
+>   const promise = fetch(url, options)
+>     .then(res => res.json())
+>     .finally(() => pendingRequests.delete(key))
+>   
+>   pendingRequests.set(key, promise)
+>   return promise
+> }
+> ```
+> **库方案**：React Query、SWR 内置请求去重和缓存
+
+**Q: CDN的工作原理？**
+> 1. **边缘节点**：在全球部署多个边缘服务器，用户访问最近节点
+> 2. **缓存机制**：边缘节点缓存静态资源，减少回源
+> 3. **DNS 解析**：智能 DNS 将用户解析到最近的节点
+> 4. **回源策略**：缓存未命中时从源站获取资源
+> 5. **优势**：
+>    - 降低延迟（就近访问）
+>    - 减轻源站压力
+>    - 提高可用性（节点故障自动切换）
+>    - 抵御 DDoS 攻击
 
 ---
 
@@ -750,10 +868,48 @@ module.exports = {
 }
 ```
 
-**扩展追问：**
-- 如何分析打包体积？
-- Tree-shaking的原理？
-- 如何优化构建速度？
+**扩展追问（含简要解答）：**
+
+**Q: 如何分析打包体积？**
+> 1. **webpack-bundle-analyzer**：可视化分析各模块体积
+>    ```javascript
+>    const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+>    plugins: [new BundleAnalyzerPlugin()]
+>    ```
+> 2. **source-map-explorer**：基于 Source Map 分析
+>    ```bash
+>    npx source-map-explorer dist/*.js
+>    ```
+> 3. **Vite 内置分析**：
+>    ```bash
+>    npx vite build --analyze
+>    ```
+> 4. **关注点**：
+>    - 第三方库占比（lodash、moment 等大包）
+>    - 重复打包的模块
+>    - 未使用的代码
+
+**Q: Tree-shaking的原理？**
+> （同上题已答）核心是依赖 ESM 静态分析 + 标记未使用导出 + 压缩时删除死代码。需要：
+> - 使用 ES Modules（`import/export`）
+> - `package.json` 配置 `"sideEffects": false`
+> - 生产模式打包（`mode: 'production'`）
+
+**Q: 如何优化构建速度？**
+> 1. **使用缓存**：
+>    - Webpack 5：`cache: { type: 'filesystem' }`
+>    - babel-loader：`cacheDirectory: true`
+> 2. **并行处理**：
+>    - `thread-loader` 多线程编译
+>    - `TerserPlugin` 的 `parallel: true`
+> 3. **减少处理范围**：
+>    - `exclude: /node_modules/`
+>    - 精确配置 `resolve.extensions`
+> 4. **使用更快的工具**：
+>    - 开发环境用 Vite（ESM + esbuild）
+>    - 用 esbuild-loader 替代 babel-loader
+>    - 用 SWC 替代 Babel
+> 5. **DLL 预编译**：提前打包不变的依赖
 
 ---
 
@@ -843,9 +999,47 @@ getTTFB((metric) => {
 })
 ```
 
-**扩展追问：**
-- 如何优化Web Vitals指标？
-- 如何监控这些指标？
+**扩展追问（含简要解答）：**
+
+**Q: 如何优化Web Vitals指标？**
+> **LCP（最大内容绘制）< 2.5s：**
+> - 预加载关键资源（`<link rel="preload">`）
+> - 图片使用 WebP/AVIF 格式 + 懒加载
+> - 使用 CDN 加速
+> - SSR/SSG 减少首屏等待
+>
+> **FID（首次输入延迟）< 100ms：**
+> - 代码分割，减少主线程阻塞
+> - 长任务拆分（`requestIdleCallback`）
+> - Web Worker 处理复杂计算
+> - 延迟加载非关键第三方脚本
+>
+> **CLS（累积布局偏移）< 0.1：**
+> - 图片/视频设置固定宽高
+> - 字体使用 `font-display: swap` + 预加载
+> - 避免在现有内容上方插入内容
+> - 动画使用 `transform` 而非改变布局属性
+
+**Q: 如何监控这些指标？**
+> 1. **前端采集**：
+>    ```javascript
+>    import { getCLS, getFID, getLCP, getFCP, getTTFB } from 'web-vitals'
+>    
+>    function sendToAnalytics(metric) {
+>      fetch('/analytics', {
+>        method: 'POST',
+>        body: JSON.stringify(metric)
+>      })
+>    }
+>    
+>    getCLS(sendToAnalytics)
+>    getFID(sendToAnalytics)
+>    getLCP(sendToAnalytics)
+>    ```
+> 2. **RUM（真实用户监控）**：Sentry Performance、Datadog RUM
+> 3. **Lighthouse CI**：在 CI 流程中自动检测
+> 4. **Chrome CrUX**：Google 收集的真实用户数据
+> 5. **告警机制**：指标超过阈值时触发告警
 
 ---
 
@@ -992,9 +1186,52 @@ function Component() {
 // - DOM引用
 ```
 
-**扩展追问：**
-- 如何识别和修复内存泄漏？
-- React组件卸载时应该清理哪些资源？
+**扩展追问（含简要解答）：**
+
+**Q: 如何识别和修复内存泄漏？**
+> **识别方法**：
+> 1. **Chrome DevTools Memory**：
+>    - 拍摄 Heap Snapshot，执行操作后再拍摄，对比差异
+>    - 查看 Detached DOM 节点（已脱离但未被回收）
+> 2. **Performance Monitor**：观察 JS Heap 是否持续增长
+> 3. **Timeline 录制**：观察内存曲线是否呈锯齿状（正常）还是持续上升（泄漏）
+>
+> **常见修复**：
+> - 移除事件监听器
+> - 清除定时器
+> - 取消未完成的请求
+> - 解除对 DOM 的引用
+> - 清理闭包中的大对象引用
+
+**Q: React组件卸载时应该清理哪些资源？**
+> ```javascript
+> useEffect(() => {
+>   // 1. 事件监听
+>   window.addEventListener('resize', handleResize)
+>   
+>   // 2. 定时器
+>   const timer = setInterval(tick, 1000)
+>   
+>   // 3. 订阅
+>   const subscription = observable.subscribe(handler)
+>   
+>   // 4. WebSocket
+>   const ws = new WebSocket(url)
+>   
+>   // 5. AbortController（取消请求）
+>   const controller = new AbortController()
+>   fetch(url, { signal: controller.signal })
+>   
+>   return () => {
+>     window.removeEventListener('resize', handleResize)
+>     clearInterval(timer)
+>     subscription.unsubscribe()
+>     ws.close()
+>     controller.abort()
+>   }
+> }, [])
+> ```
+> **原则**：所有在 `useEffect` 中创建的外部资源，都要在返回的清理函数中释放
 
 ---
 
@@ -1038,9 +1275,48 @@ self.addEventListener('fetch', (event) => {
 })
 ```
 
-**扩展追问：**
-- Service Worker的使用场景？
-- 如何实现离线缓存策略？
+**扩展追问（含简要解答）：**
+
+**Q: Service Worker的使用场景？**
+> 1. **离线缓存**：PWA 应用离线访问
+> 2. **资源预缓存**：提前缓存关键资源，加速首屏
+> 3. **后台同步**：离线时缓存操作，联网后自动同步
+> 4. **推送通知**：接收服务端推送消息
+> 5. **请求拦截**：统一处理请求，添加缓存策略
+> 6. **性能优化**：缓存 API 响应，减少网络请求
+
+**Q: 如何实现离线缓存策略？**
+> **常用策略**：
+> 1. **Cache First（缓存优先）**：适合静态资源
+>    ```javascript
+>    self.addEventListener('fetch', (event) => {
+>      event.respondWith(
+>        caches.match(event.request).then(cached => 
+>          cached || fetch(event.request)
+>        )
+>      )
+>    })
+>    ```
+> 2. **Network First（网络优先）**：适合 API 请求
+>    ```javascript
+>    event.respondWith(
+>      fetch(event.request)
+>        .catch(() => caches.match(event.request))
+>    )
+>    ```
+> 3. **Stale While Revalidate（先返回缓存，后台更新）**：适合不常变的内容
+>    ```javascript
+>    event.respondWith(
+>      caches.match(event.request).then(cached => {
+>        const fetchPromise = fetch(event.request).then(response => {
+>          caches.open('v1').then(cache => cache.put(event.request, response.clone()))
+>          return response
+>        })
+>        return cached || fetchPromise
+>      })
+>    )
+>    ```
+> 4. **使用 Workbox**：Google 的 SW 工具库，简化缓存策略配置
 
 ---
 

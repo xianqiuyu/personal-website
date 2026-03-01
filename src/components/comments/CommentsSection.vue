@@ -1,24 +1,24 @@
 <template>
   <section class="comments">
     <div class="comments-head">
-      <h2 class="comments-title">公开评论</h2>
-      <p class="comments-subtitle">欢迎路过的朋友留下你的想法（所有人可见）</p>
+      <h2 class="comments-title">{{ $t('comments.title') }}</h2>
+      <p class="comments-subtitle">{{ $t('comments.subtitle') }}</p>
     </div>
 
     <form class="comment-form" @submit.prevent="submit">
       <div class="row">
         <label class="label">
-          <span>昵称（可选）</span>
-          <input v-model.trim="name" maxlength="20" placeholder="匿名 / 你的昵称" />
+          <span>{{ $t('comments.nicknameLabel') }}</span>
+          <input v-model.trim="name" maxlength="20" :placeholder="$t('comments.nicknamePlaceholder')" />
         </label>
       </div>
       <label class="label">
-        <span>评论内容</span>
+        <span>{{ $t('comments.contentLabel') }}</span>
         <textarea
           v-model.trim="content"
           :maxlength="maxContentLen"
           rows="4"
-          placeholder="写点什么吧…（文明发言，拒绝广告/恶意内容）"
+          :placeholder="$t('comments.contentPlaceholder')"
         ></textarea>
         <div class="hint">
           <span>{{ content.length }}/{{ maxContentLen }}</span>
@@ -27,9 +27,9 @@
 
       <div class="actions">
         <button class="btn" type="submit" :disabled="isSubmitting || !content.trim()">
-          <span v-if="!isSubmitting && editingId === null">发布评论</span>
-          <span v-else-if="!isSubmitting && editingId !== null">保存修改</span>
-          <span v-else>发布中...</span>
+          <span v-if="!isSubmitting && editingId === null">{{ $t('comments.submit') }}</span>
+          <span v-else-if="!isSubmitting && editingId !== null">{{ $t('comments.save') }}</span>
+          <span v-else>{{ $t('comments.submitting') }}</span>
         </button>
         <button
           v-if="editingId !== null"
@@ -38,7 +38,7 @@
           @click="cancelEdit"
           :disabled="isSubmitting"
         >
-          取消编辑
+          {{ $t('comments.cancelEdit') }}
         </button>
         <span v-if="message" class="message" :class="{ ok: messageType === 'ok', err: messageType === 'err' }">
           {{ message }}
@@ -48,14 +48,14 @@
 
     <div class="list">
       <div class="list-head">
-        <h3>最新评论</h3>
+        <h3>{{ $t('comments.latestComments') }}</h3>
         <button class="ghost" type="button" @click="load" :disabled="isLoading">
-          刷新
+          {{ $t('comments.refresh') }}
         </button>
       </div>
 
-      <div v-if="isLoading" class="loading">加载中...</div>
-      <div v-else-if="comments.length === 0" class="empty">还没有评论，来当第一个吧～</div>
+      <div v-if="isLoading" class="loading">{{ $t('comments.loading') }}</div>
+      <div v-else-if="comments.length === 0" class="empty">{{ $t('comments.empty') }}</div>
 
       <ul v-else class="items">
         <li v-for="c in comments" :key="c.id" class="item">
@@ -68,11 +68,11 @@
             <div v-if="c.isMine" class="ops">
               <button type="button" class="chip-btn" @click="startEdit(c)">
                 ✏️
-                <span>编辑</span>
+                <span>{{ $t('comments.edit') }}</span>
               </button>
               <button type="button" class="chip-btn danger" @click="askRemove(c)">
                 🗑
-                <span>删除</span>
+                <span>{{ $t('comments.delete') }}</span>
               </button>
             </div>
           </div>
@@ -84,22 +84,22 @@
     <!-- 删除确认弹框 -->
     <div v-if="showConfirm" class="confirm-overlay" @click="closeConfirm">
       <div class="confirm-dialog" @click.stop>
-        <h3 class="confirm-title">删除这条评论？</h3>
+        <h3 class="confirm-title">{{ $t('comments.deleteConfirmTitle') }}</h3>
         <p class="confirm-text">
-          删除后将无法恢复，只会影响你自己刚才发布的这一条。
+          {{ $t('comments.deleteConfirmText') }}
         </p>
         <p v-if="confirmTarget" class="confirm-preview">
-          “{{ confirmTarget.content }}”
+          "{{ confirmTarget.content }}"
         </p>
         <div class="confirm-actions">
-          <button type="button" class="ghost" @click="closeConfirm">先留着</button>
+          <button type="button" class="ghost" @click="closeConfirm">{{ $t('comments.keepIt') }}</button>
           <button
             type="button"
             class="btn danger"
             @click="confirmRemove"
             :disabled="isSubmitting"
           >
-            确认删除
+            {{ $t('comments.confirmDelete') }}
           </button>
         </div>
       </div>
@@ -109,6 +109,9 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t, locale } = useI18n()
 
 type CommentItem = {
   id: number
@@ -163,7 +166,8 @@ const ensureAnonUserId = () => {
 
 const formatTime = (iso: string) => {
   const d = new Date(iso)
-  return d.toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+  const localeStr = locale.value === 'zh' ? 'zh-CN' : 'en-US'
+  return d.toLocaleString(localeStr, { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
 }
 
 const setMsg = (type: 'ok' | 'err', text: string) => {
@@ -176,16 +180,16 @@ const setMsg = (type: 'ok' | 'err', text: string) => {
 
 const parseApiJson = (raw: string) => {
   const text = raw.trim()
-  if (!text) throw new Error('接口返回空响应')
+  if (!text) throw new Error(t('comments.errors.emptyResponse'))
   const parsed: unknown = JSON.parse(text)
-  if (!parsed || typeof parsed !== 'object') throw new Error('接口返回格式不正确')
+  if (!parsed || typeof parsed !== 'object') throw new Error(t('comments.errors.invalidFormat'))
   return parsed as Record<string, unknown>
 }
 
 const getApiError = (obj: Record<string, unknown>) => {
   const err = obj.error
   if (typeof err === 'string' && err.trim()) return err
-  return '请求失败'
+  return t('comments.errors.requestFailed')
 }
 
 const load = async () => {
@@ -199,7 +203,7 @@ const load = async () => {
     if (!r.ok || obj.ok !== true) throw new Error(getApiError(obj))
     comments.value = (obj.comments as CommentItem[]) || []
   } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : '加载失败'
+    const msg = e instanceof Error ? e.message : t('comments.loadFailed')
     setMsg('err', msg)
   } finally {
     isLoading.value = false
@@ -212,7 +216,7 @@ const submit = async () => {
   try {
     const body = {
       page: props.page,
-      name: name.value.trim() || '匿名',
+      name: name.value.trim() || t('comments.anonymous'),
       content: content.value.trim(),
       anonUserId: anonUserId.value,
     }
@@ -232,10 +236,10 @@ const submit = async () => {
 
     content.value = ''
     editingId.value = null
-    setMsg('ok', method === 'POST' ? '发布成功' : '修改成功')
+    setMsg('ok', method === 'POST' ? t('comments.submitSuccess') : t('comments.editSuccess'))
     await load()
   } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : '发布失败'
+    const msg = e instanceof Error ? e.message : t('comments.submitFailed')
     setMsg('err', msg)
   } finally {
     isSubmitting.value = false
@@ -263,10 +267,10 @@ const doRemove = async (c: CommentItem) => {
     const obj = parseApiJson(raw)
     if (!r.ok || obj.ok !== true) throw new Error(getApiError(obj))
 
-    setMsg('ok', '已删除')
+    setMsg('ok', t('comments.deleteSuccess'))
     await load()
   } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : '删除失败'
+    const msg = e instanceof Error ? e.message : t('comments.deleteFailed')
     setMsg('err', msg)
   }
 }

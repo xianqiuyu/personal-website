@@ -1,8 +1,8 @@
 <template>
   <div class="about-page">
     <div class="page-header">
-      <h1 class="page-title">关于我</h1>
-      <p class="page-subtitle">了解更多关于我的信息</p>
+      <h1 class="page-title">{{ $t('about.title') }}</h1>
+      <p class="page-subtitle">{{ $t('about.subtitle') }}</p>
     </div>
 
     <div class="container">
@@ -12,45 +12,45 @@
           <div class="avatar-large">
             <div class="avatar">{{ personalInfo.avatar }}</div>
           </div>
-          <h2>{{ personalInfo.name }}</h2>
-          <p class="title">{{ personalInfo.title }}</p>
-          <p class="description">{{ personalInfo.bio }}</p>
+          <h2>{{ displayName }}</h2>
+          <p class="title">{{ $t('personal.title') }}</p>
+          <p class="description">{{ $t('personal.bio') }}</p>
         </div>
 
         <!-- 详细信息 -->
         <div class="info-grid">
           <div class="info-card">
             <div class="card-icon">🎓</div>
-            <h3>教育背景</h3>
-            <p>{{ personalInfo.education }}</p>
+            <h3>{{ $t('about.education') }}</h3>
+            <p>{{ $t('personal.education') }}</p>
           </div>
 
           <div class="info-card">
             <div class="card-icon">💼</div>
-            <h3>工作经验</h3>
-            <p>{{ personalInfo.experience }}</p>
+            <h3>{{ $t('about.experience') }}</h3>
+            <p>{{ $t('personal.experience') }}</p>
           </div>
 
           <div class="info-card">
             <div class="card-icon">📍</div>
-            <h3>所在地</h3>
-            <p>{{ personalInfo.location }}</p>
+            <h3>{{ $t('about.location') }}</h3>
+            <p>{{ $t('personal.location') }}</p>
           </div>
 
           <div class="info-card">
             <div class="card-icon">🎯</div>
-            <h3>兴趣爱好</h3>
-            <p>{{ personalInfo.hobbies }}</p>
+            <h3>{{ $t('about.hobbies') }}</h3>
+            <p>{{ $t('personal.hobbies') }}</p>
           </div>
         </div>
 
         <!-- 技能展示 -->
         <div class="skills-section">
-          <h2 class="section-title">我的技能</h2>
+          <h2 class="section-title">{{ $t('about.mySkills') }}</h2>
           <div class="skills-grid">
-            <div 
-              v-for="(skill, index) in skills" 
-              :key="index" 
+            <div
+              v-for="(skill, index) in skills"
+              :key="index"
               class="skill-card"
               :style="{ animationDelay: `${index * 0.1}s` }"
             >
@@ -69,12 +69,26 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { personalInfo, skills } from '@/config/personalInfo'
+import { personalInfo, skills as skillsConfig } from '@/config/personalInfo'
 
 gsap.registerPlugin(ScrollTrigger)
+
+const { t, locale } = useI18n()
+const displayName = computed(() => {
+  return locale.value === 'zh' ? personalInfo.name : (personalInfo.nickname || personalInfo.name)
+})
+
+// 翻译后的技能列表
+const skills = computed(() => {
+  return skillsConfig.map(skill => ({
+    ...skill,
+    name: t(`skills.${skill.name}`, skill.name)
+  }))
+})
 
 onMounted(() => {
   gsap.utils.toArray('.info-card, .skill-card').forEach((el: any) => {

@@ -1,8 +1,8 @@
 <template>
   <div class="footprints-page">
     <div class="page-header">
-      <h1 class="page-title">足迹</h1>
-      <p class="page-subtitle">记录我走过的路、做过的事、一些瞬间</p>
+      <h1 class="page-title">{{ $t('footprints.title') }}</h1>
+      <p class="page-subtitle">{{ $t('footprints.subtitle') }}</p>
     </div>
 
     <div class="container">
@@ -26,15 +26,33 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { gsap } from 'gsap'
 import CommentsSection from '@/components/comments/CommentsSection.vue'
 
-const footprints = [
-  { date: '2026-02', tag: '学习', title: '把个人站从 0 到 1 做上线', desc: '从动画、路由到部署，把体验打磨得更顺滑，也把内容体系搭起来。' },
-  { date: '2025-12', tag: '成长', title: '重构一个老项目的前端架构', desc: '把边界拆清楚：组件/状态/接口，配上自动化检查与更稳的发布流程。' },
-  { date: '2025-08', tag: '生活', title: '一次旅行带来的灵感', desc: '看见真实世界的色彩和节奏，回到代码里更愿意做“有温度”的交互。' },
-]
+const { t } = useI18n()
+
+const footprints = computed(() => [
+  {
+    date: '2026-02',
+    tag: t('footprints.items.0.tag'),
+    title: t('footprints.items.0.title'),
+    desc: t('footprints.items.0.desc'),
+  },
+  {
+    date: '2025-12',
+    tag: t('footprints.items.1.tag'),
+    title: t('footprints.items.1.title'),
+    desc: t('footprints.items.1.desc'),
+  },
+  {
+    date: '2025-08',
+    tag: t('footprints.items.2.tag'),
+    title: t('footprints.items.2.title'),
+    desc: t('footprints.items.2.desc'),
+  },
+])
 
 onMounted(() => {
   gsap.from('.timeline-item', {
