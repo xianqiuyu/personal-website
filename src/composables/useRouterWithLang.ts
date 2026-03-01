@@ -49,7 +49,7 @@ export function useRouterWithLang() {
    * 获取带语言前缀的路由对象
    */
   const getRouteWithLang = (to: string | { name?: string; path?: string; params?: Record<string, any>; query?: Record<string, any> }) => {
-    const currentLang = locale.value
+    const currentLang = (locale.value === 'en' || locale.value === 'zh') ? locale.value : 'zh'
     
     // 如果目标路由是字符串
     if (typeof to === 'string') {

@@ -292,7 +292,7 @@ const drawConnections = () => {
   if (!ctx) return
 
   const drawConnection = (parent: TreeNode, child: TreeNode | null) => {
-    if (!child) return
+    if (!child || !ctx) return
 
     const parentPos = nodePositions.get(parent)
     const childPos = nodePositions.get(child)
