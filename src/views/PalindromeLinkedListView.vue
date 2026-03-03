@@ -480,7 +480,7 @@ const goBack = () => {
   pushWithLang('/algorithms/hot100')
 }
 
-const activeTab = ref<'solution' | 'explanation'>('solution')
+const activeTab = ref('solution')
 
 const codeTabs = computed(() => [
   { name: 'solution', label: t('algorithms.solutionCode') },
