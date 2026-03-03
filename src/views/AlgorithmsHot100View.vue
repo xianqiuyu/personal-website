@@ -74,6 +74,18 @@ const problems = computed(() => [
     tags: [t('lca.tags.binaryTree'), t('lca.tags.dfs'), t('lca.tags.recursion')],
     route: '/algorithms/hot100/lowest-common-ancestor-of-a-binary-tree',
   },
+  {
+    id: 'palindrome-linked-list',
+    title: t('palindromeLinkedList.title'),
+    description: t('palindromeLinkedList.description'),
+    difficulty: 'Easy' as const,
+    tags: [
+      t('palindromeLinkedList.tags.linkedList'),
+      t('palindromeLinkedList.tags.twoPointers'),
+      t('palindromeLinkedList.tags.reverse'),
+    ],
+    route: '/algorithms/hot100/palindrome-linked-list',
+  },
   // 可以继续添加更多题目
 ])
 

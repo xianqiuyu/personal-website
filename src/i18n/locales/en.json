@@ -368,6 +368,32 @@
       "highlights": ["AST parsing", "Dependency graph construction", "Plugin mechanism"]
     }
   },
+  "palindromeLinkedList": {
+    "title": "Palindrome Linked List",
+    "description": "Determine whether a singly linked list is a palindrome. Time complexity O(n), space complexity O(1).",
+    "tags": {
+      "linkedList": "Linked List",
+      "twoPointers": "Fast & Slow Pointers",
+      "reverse": "Reverse List"
+    },
+    "ideaTitle": "Idea: Fast-Slow Pointers + Reverse Second Half",
+    "idea1": "The straightforward way is to copy all values into an array and use two pointers from both ends to check, but that uses O(n) extra space. To meet the O(1) space requirement, we can leverage the structure of the linked list:",
+    "ideaStep1": "Use fast and slow pointers to find the middle of the list (fast moves 2 steps, slow moves 1 step).",
+    "ideaStep2": "Reverse the second half of the list starting from the middle.",
+    "ideaStep3": "Use two pointers starting from the head and the head of the reversed second half to compare node values one by one.",
+    "idea2": "If all corresponding values are equal, the list is a palindrome; otherwise, it's not. To keep the original list intact, we can reverse the second half back after comparison.",
+    "timeDesc": "One pass to find the middle + one pass to reverse + one pass to compare, overall O(n).",
+    "spaceDesc": "Only a few pointer variables are used, no extra space proportional to the list length.",
+    "stepTitle": "Step-by-step demo (example list 1 → 2 → 3 → 2 → 1):",
+    "step0": "Initialization: the list is 1 → 2 → 3 → 2 → 1, pointers have not started moving yet.",
+    "step1": "Fast & slow pointers start from the head: slow at value 1, fast at value 1.",
+    "step2": "Pointers move forward: slow moves to value 2, fast moves to value 3.",
+    "step3": "Pointers move again: slow reaches the middle node (value 3), fast reaches the end, so we found the middle.",
+    "step4": "Reverse the second half starting from the middle, getting right half 1 ← 2 ← 3, now ready to compare from both sides.",
+    "step5": "Compare ends: left pointer at first node (value 1), right pointer at last node (value 1), equal, mark as matched.",
+    "step6": "Move towards the center: left pointer at second node (value 2), right pointer at second-to-last node (value 2), equal, mark as matched.",
+    "step7": "All corresponding positions match, so the list is a palindrome."
+  },
   "game": {
     "tank": {
       "title": "Tank Battle",

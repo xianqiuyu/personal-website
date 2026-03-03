@@ -9,6 +9,7 @@ import FootprintsView from '../views/FootprintsView.vue'
 import AlgorithmsHot100View from '../views/AlgorithmsHot100View.vue'
 import IntersectionOfTwoLinkedListsView from '../views/IntersectionOfTwoLinkedListsView.vue'
 import LowestCommonAncestorView from '../views/LowestCommonAncestorView.vue'
+import PalindromeLinkedListView from '../views/PalindromeLinkedListView.vue'
 import i18n from '../i18n'
 
 // 定义路由配置
@@ -62,6 +63,11 @@ const routes = [
     path: '/algorithms/hot100/lowest-common-ancestor-of-a-binary-tree',
     name: 'lowest-common-ancestor-of-a-binary-tree',
     component: LowestCommonAncestorView,
+  },
+  {
+    path: '/algorithms/hot100/palindrome-linked-list',
+    name: 'palindrome-linked-list',
+    component: PalindromeLinkedListView,
   },
 ]
 
